@@ -3315,6 +3315,105 @@ const referenceAnnotationsPlugin = {
 };
 
 // ---------------------------------------------------------------------------
+// GENERIC: box-and-whisker chart renderer with outlier support
+// ---------------------------------------------------------------------------
+function renderBoxChart(canvasId, boxData, opts){
+  opts = opts || {};
+  const C = getThemeColors();
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+  
+  const chart = createChart(canvasId, {
+    type: "bar",
+    data: {
+      labels: boxData.labels,
+      datasets: [{
+        data: boxData.labels.map((_, i) => [boxData.q1[i], boxData.q3[i]]),
+        backgroundColor: opts.color || C.tealSoft,
+        borderColor: opts.borderColor || C.teal,
+        borderWidth: 1.5,
+        borderSkipped: false,
+        borderRadius: 3,
+        barThickness: opts.barThickness || 22,
+      }],
+    },
+    plugins: [boxWhiskerPlugin],
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { right: 140, top: 10 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: {
+          title: (items) => items[0].label,
+          label: (c) => {
+            const i = c.dataIndex;
+            const u = opts.unit || "";
+            const outs = boxData.outliers && boxData.outliers[i] ? boxData.outliers[i] : [];
+            const outStr = outs.length > 0 ? ("\nOutliers (" + outs.length + "): " + outs.map(o => fmtInt(o) + u).join(", ")) : "";
+            return [
+              "Min: " + fmtInt(boxData.min[i]) + u + " · Q1: " + fmtInt(boxData.q1[i]) + u,
+              "Median: " + fmtInt(boxData.median[i]) + u,
+              "Q3: " + fmtInt(boxData.q3[i]) + u + " · Max: " + fmtInt(boxData.max[i]) + u,
+              outStr
+            ].filter(Boolean);
+          },
+        }},
+      },
+      scales: {
+        x: { grid: baseGrid, ticks: baseTicks, title: { display: true, text: opts.xTitle || "", color: C.text } },
+        y: { grid: { display: false }, ticks: { ...baseTicks, font: { size: 10.5 } } },
+      },
+    },
+  });
+  if (chart) {
+    chart.boxData = boxData;
+    chart.boxOpts = opts;
+    chart.update();
+  }
+}
+
+// ---------------------------------------------------------------------------
+// GENERIC: heatmap (pure CSS grid)
+// ---------------------------------------------------------------------------
+function renderHeatmap(containerId, rowLabels, colLabels, matrix, opts){
+  opts = opts || {};
+  const C = getThemeColors();
+  const flat = matrix.flat();
+  const max = Math.max(...flat, 1);
+  const fromColor = opts.fromColor || (C.isLight ? [232, 237, 245] : [24, 34, 56]);
+  const toColor = opts.toColor || (C.isLight ? [13, 148, 136] : [53, 201, 176]);
+  const colorFor = (v) => {
+    const t = v / max;
+    const r = Math.round(fromColor[0] + t * (toColor[0] - fromColor[0]));
+    const g = Math.round(fromColor[1] + t * (toColor[1] - fromColor[1]));
+    const b = Math.round(fromColor[2] + t * (toColor[2] - fromColor[2]));
+    return "rgb(" + r + "," + g + "," + b + ")";
+  };
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const colWidth = opts.labelWidth || 60;
+  const gridCols = colWidth + "px repeat(" + colLabels.length + ", 1fr)";
+  let html = '<div class="heatmap">';
+  html += '<div class="heatmap-col-labels" style="grid-template-columns:' + gridCols + '"><span></span>' +
+    colLabels.map(c => '<span>' + (opts.colFormat ? opts.colFormat(c) : c) + '</span>').join('') + '</div>';
+  rowLabels.forEach((row, ri) => {
+    html += '<div class="heatmap-row" style="grid-template-columns:' + gridCols + '">';
+    html += '<div class="row-label">' + row + '</div>';
+    matrix[ri].forEach((v, ci) => {
+      html += '<div class="heatmap-cell" style="background:' + colorFor(v) + '">' +
+        '<div class="heatmap-tooltip">' + row + ' · ' + colLabels[ci] + ': ' + v.toLocaleString("en-US") + (opts.suffix||"") + '</div>' +
+      '</div>';
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  html += '<div class="heatmap-legend"><span>' + (opts.legendLow||"fewer") + '</span><span class="scale" style="background:linear-gradient(90deg, rgb(' + fromColor.join(",") + '), rgb(' + toColor.join(",") + '))"></span><span>' + (opts.legendHigh||"more") + '</span></div>';
+  container.innerHTML = html;
+}
+
+// ---------------------------------------------------------------------------
 // HERO — monthly orders (bar) + avg score (line)
 // ---------------------------------------------------------------------------
 function renderHero(){
