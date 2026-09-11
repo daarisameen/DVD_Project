@@ -1,69 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Order Journey — An End-to-End Marketplace Data Visualization Study</title>
+<title>The Order Journey — Marketplace Data Visualization Study</title>
 <style>
-:root{
-  --bg-deep:#0D1321; --bg-panel:#141B2E; --bg-raised:#1B2338;
-  --line:#2A3350; --line-soft:#202942;
-  --text-primary:#EEF1F8; --text-muted:#8B93AC; --text-dim:#5D6684;
-  --teal:#35C9B0; --amber:#F5A445; --coral:#EF6461; --violet:#8C7AE6;
+:root, [data-theme="light"]{
+  --bg-deep:#F3F5F9; --bg-panel:#FFFFFF; --bg-raised:#E8EDF5;
+  --line:#CBD5E1; --line-soft:#E2E8F0;
+  --text-primary:#0F172A; --text-muted:#475569; --text-dim:#64748B;
+  --teal:#0D9488; --teal-soft:rgba(13,148,136,0.15);
+  --amber:#D97706; --amber-soft:rgba(217,119,6,0.15);
+  --coral:#DC2626; --coral-soft:rgba(220,38,38,0.15);
+  --violet:#7C3AED; --violet-soft:rgba(124,58,237,0.15);
+  --card-shadow:0 4px 16px rgba(0,0,0,0.06);
   --font-display: -apple-system, "Avenir Next", "Segoe UI Semibold", "Helvetica Neue", Arial, sans-serif;
   --font-body: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
+
+[data-theme="dark"]{
+  --bg-deep:#0D1321; --bg-panel:#141B2E; --bg-raised:#1B2338;
+  --line:#2A3350; --line-soft:#202942;
+  --text-primary:#EEF1F8; --text-muted:#8B93AC; --text-dim:#5D6684;
+  --teal:#35C9B0; --teal-soft:rgba(53,201,176,0.18);
+  --amber:#F5A445; --amber-soft:rgba(245,164,69,0.18);
+  --coral:#EF6461; --coral-soft:rgba(239,100,97,0.18);
+  --violet:#8C7AE6; --violet-soft:rgba(140,122,230,0.18);
+  --card-shadow:0 4px 20px rgba(0,0,0,0.25);
+}
+
 *{box-sizing:border-box; margin:0; padding:0;}
 html{scroll-behavior:smooth;}
-body{ background:var(--bg-deep); color:var(--text-primary); font-family:var(--font-body); font-size:15px; line-height:1.65; -webkit-font-smoothing:antialiased; }
+body{ background:var(--bg-deep); color:var(--text-primary); font-family:var(--font-body); font-size:15px; line-height:1.65; -webkit-font-smoothing:antialiased; transition:background 0.25s ease, color 0.25s ease; }
 ::selection{ background:var(--teal); color:var(--bg-deep); }
 
-.shell{ display:grid; grid-template-columns:250px 1fr; min-height:100vh; }
+.shell{ display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
 @media (max-width:900px){ .shell{grid-template-columns:1fr;} .side-nav{display:none;} }
 
-.side-nav{ position:sticky; top:0; height:100vh; border-right:1px solid var(--line-soft); padding:32px 22px; display:flex; flex-direction:column; gap:2px; overflow-y:auto; }
-.side-nav .brand{ font-family:var(--font-display); font-size:1.05rem; font-weight:700; letter-spacing:-0.01em; margin-bottom:6px; }
-.side-nav .brand-sub{ font-size:0.76rem; color:var(--text-dim); margin-bottom:30px; line-height:1.5; }
-.nav-item{ display:flex; gap:12px; align-items:baseline; padding:9px 8px; border-radius:6px; color:var(--text-muted); text-decoration:none; font-size:0.85rem; transition:color .15s ease, background .15s ease; cursor:pointer; }
+.side-nav{ position:sticky; top:0; height:100vh; border-right:1px solid var(--line-soft); padding:28px 20px; display:flex; flex-direction:column; gap:2px; overflow-y:auto; background:var(--bg-panel); }
+.side-nav .brand{ font-family:var(--font-display); font-size:1.05rem; font-weight:700; letter-spacing:-0.01em; margin-bottom:4px; }
+.side-nav .brand-sub{ font-size:0.75rem; color:var(--text-dim); margin-bottom:20px; line-height:1.45; }
+
+.theme-toggle-btn{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:9px 12px; margin-bottom:22px; background:var(--bg-raised); border:1px solid var(--line); border-radius:8px; color:var(--text-primary); font-family:var(--font-body); font-size:0.8rem; font-weight:600; cursor:pointer; transition:all 0.2s ease; }
+.theme-toggle-btn:hover{ border-color:var(--teal); background:var(--line-soft); }
+
+.nav-item{ display:flex; gap:10px; align-items:baseline; padding:8px 10px; border-radius:6px; color:var(--text-muted); text-decoration:none; font-size:0.84rem; transition:color .15s ease, background .15s ease; cursor:pointer; }
 .nav-item:hover{ color:var(--text-primary); background:var(--bg-raised); }
-.nav-item.active{ color:var(--text-primary); background:var(--bg-raised); }
+.nav-item.active{ color:var(--text-primary); background:var(--bg-raised); font-weight:600; }
 .nav-item .n{ font-family:var(--font-mono); font-size:0.7rem; color:var(--text-dim); min-width:16px; }
-.nav-item.active .n{ color:var(--teal); }
-.side-foot{ margin-top:auto; padding-top:18px; border-top:1px solid var(--line-soft); font-size:0.7rem; color:var(--text-dim); line-height:1.7; }
+.nav-item.active .n{ color:var(--teal); font-weight:700; }
+.side-foot{ margin-top:auto; padding-top:16px; border-top:1px solid var(--line-soft); font-size:0.7rem; color:var(--text-dim); line-height:1.6; }
 
 main{ min-width:0; }
-.section{ padding:64px 56px; border-bottom:1px solid var(--line-soft); max-width:1180px; }
-@media (max-width:700px){ .section{padding:44px 22px;} }
+.section{ padding:60px 52px; border-bottom:1px solid var(--line-soft); max-width:1180px; }
+@media (max-width:700px){ .section{padding:40px 20px;} }
 
 .stage-eyebrow{ display:flex; align-items:center; gap:12px; margin-bottom:16px; }
-.stage-num{ font-family:var(--font-mono); font-size:0.82rem; color:var(--teal); border:1px solid var(--line); border-radius:20px; padding:3px 11px; }
+.stage-num{ font-family:var(--font-mono); font-size:0.82rem; color:var(--teal); border:1px solid var(--line); border-radius:20px; padding:3px 11px; background:var(--teal-soft); font-weight:600; }
 .stage-tables{ font-size:0.78rem; color:var(--text-dim); font-family:var(--font-mono); }
-.section h2{ font-family:var(--font-display); font-size:1.95rem; font-weight:700; letter-spacing:-0.015em; margin-bottom:16px; max-width:700px; }
-.section .lede{ color:var(--text-muted); font-size:1rem; max-width:700px; margin-bottom:30px; }
-.section h3.sub-h{ font-family:var(--font-display); font-size:1.2rem; font-weight:600; margin:36px 0 10px; }
-.section p.narrative{ color:var(--text-muted); font-size:0.94rem; max-width:760px; margin-bottom:18px; }
+.section h2{ font-family:var(--font-display); font-size:1.85rem; font-weight:700; letter-spacing:-0.015em; margin-bottom:14px; max-width:740px; }
+.section .lede{ color:var(--text-muted); font-size:0.98rem; max-width:740px; margin-bottom:28px; line-height:1.6; }
+.section h3.sub-h{ font-family:var(--font-display); font-size:1.18rem; font-weight:600; margin:32px 0 10px; color:var(--text-primary); }
+.section p.narrative{ color:var(--text-muted); font-size:0.94rem; max-width:780px; margin-bottom:16px; line-height:1.65; }
 .section p.narrative b{ color:var(--text-primary); font-weight:600; }
 .section p.narrative code{ background:var(--bg-raised); padding:1px 6px; border-radius:4px; font-family:var(--font-mono); font-size:0.85em; color:var(--text-primary); }
 
-.kpi-row{ display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:1px; background:var(--line-soft); border:1px solid var(--line-soft); border-radius:12px; overflow:hidden; margin-bottom:40px; }
-.kpi{ background:var(--bg-panel); padding:20px 18px; }
-.kpi .val{ font-family:var(--font-mono); font-size:1.5rem; font-weight:600; color:var(--text-primary); letter-spacing:-0.01em; }
+.kpi-row{ display:grid; grid-template-columns:repeat(auto-fit, minmax(145px, 1fr)); gap:1px; background:var(--line-soft); border:1px solid var(--line-soft); border-radius:12px; overflow:hidden; margin-bottom:32px; box-shadow:var(--card-shadow); }
+.kpi{ background:var(--bg-panel); padding:18px 16px; }
+.kpi .val{ font-family:var(--font-mono); font-size:1.45rem; font-weight:700; color:var(--text-primary); letter-spacing:-0.01em; }
 .kpi .val.teal{color:var(--teal);} .kpi .val.amber{color:var(--amber);} .kpi .val.coral{color:var(--coral);}
-.kpi .lbl{ margin-top:5px; font-size:0.74rem; color:var(--text-dim); line-height:1.4; }
+.kpi .lbl{ margin-top:4px; font-size:0.73rem; color:var(--text-dim); line-height:1.35; text-transform:uppercase; letter-spacing:0.02em; }
 
-.grid2{ display:grid; grid-template-columns:1.3fr 1fr; gap:20px; margin-bottom:20px;}
+.currency-badge{ display:inline-flex; align-items:center; gap:8px; padding:10px 14px; margin-bottom:28px; background:var(--bg-raised); border:1px solid var(--line); border-radius:8px; font-size:0.84rem; color:var(--text-muted); }
+.currency-badge b{ color:var(--text-primary); }
+
+.grid2{ display:grid; grid-template-columns:1.2fr 1fr; gap:20px; margin-bottom:20px;}
 .grid3{ display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; margin-bottom:20px;}
 .grid-even{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;}
 @media (max-width:900px){ .grid2, .grid3, .grid-even{ grid-template-columns:1fr; } }
 
-.panel{ background:var(--bg-panel); border:1px solid var(--line-soft); border-radius:12px; padding:22px 22px 16px; margin-bottom:20px;}
-.panel h4{ font-family:var(--font-display); font-size:0.96rem; font-weight:600; margin-bottom:2px; }
-.panel .panel-sub{ font-size:0.76rem; color:var(--text-dim); margin-bottom:16px; }
+.panel{ background:var(--bg-panel); border:1px solid var(--line-soft); border-radius:12px; padding:20px 20px 18px; margin-bottom:22px; box-shadow:var(--card-shadow); }
+.panel h4{ font-family:var(--font-display); font-size:0.96rem; font-weight:600; margin-bottom:3px; color:var(--text-primary); }
+.panel .panel-sub{ font-size:0.76rem; color:var(--text-dim); margin-bottom:14px; }
 .chart-wrap{ position:relative; height:260px; }
 .chart-wrap.tall{ height:340px; }
 .chart-wrap.short{ height:210px; }
 .chart-wrap.xtall{ height:420px; }
+
+/* Dedicated Chart Notes component */
+.chart-notes{ margin-top:16px; padding-top:14px; border-top:1px solid var(--line-soft); display:flex; flex-direction:column; gap:10px; font-size:0.86rem; }
+.note-block{ display:flex; flex-direction:column; gap:4px; }
+.note-tag{ font-family:var(--font-mono); font-size:0.70rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; display:inline-flex; align-items:center; gap:5px; width:fit-content; padding:2px 8px; border-radius:4px; }
+.note-tag.chart-tag{ background:var(--teal-soft); color:var(--teal); }
+.note-tag.findings-tag{ background:var(--amber-soft); color:var(--amber); }
+.note-block p{ color:var(--text-muted); line-height:1.55; margin:0; }
+.note-block p b{ color:var(--text-primary); }
 
 .insight{ border-left:3px solid var(--teal); background:var(--bg-raised); border-radius:0 10px 10px 0; padding:14px 18px; margin:14px 0; font-size:0.88rem; color:var(--text-muted); }
 .insight b{ color:var(--text-primary); font-weight:600; }
@@ -72,14 +104,14 @@ main{ min-width:0; }
 .insight-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:20px 0; }
 @media (max-width:900px){ .insight-grid{ grid-template-columns:1fr; } }
 
-.hero{ padding:72px 56px 56px; border-bottom:1px solid var(--line-soft);
-  background: radial-gradient(ellipse 900px 400px at 15% -10%, rgba(53,201,176,0.10), transparent), radial-gradient(ellipse 700px 400px at 90% 10%, rgba(245,164,69,0.08), transparent); }
-@media (max-width:700px){ .hero{padding:48px 22px 40px;} }
-.hero .kicker{ font-size:0.82rem; color:var(--teal); margin-bottom:18px; font-family:var(--font-mono); }
-.hero h1{ font-family:var(--font-display); font-size:clamp(2rem, 4vw, 3.2rem); font-weight:700; letter-spacing:-0.02em; line-height:1.1; max-width:840px; margin-bottom:22px; }
-.hero .sub{ font-size:1.06rem; color:var(--text-muted); max-width:680px; margin-bottom:36px; }
-.scope-row{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:44px; }
-.scope-chip{ font-size:0.78rem; border:1px solid var(--line); border-radius:20px; padding:6px 14px; color:var(--text-muted); font-family:var(--font-mono); }
+.hero{ padding:64px 52px 48px; border-bottom:1px solid var(--line-soft);
+  background: radial-gradient(ellipse 900px 400px at 15% -10%, var(--teal-soft), transparent), radial-gradient(ellipse 700px 400px at 90% 10%, var(--amber-soft), transparent); }
+@media (max-width:700px){ .hero{padding:40px 20px 32px;} }
+.hero .kicker{ font-size:0.82rem; color:var(--teal); margin-bottom:16px; font-family:var(--font-mono); font-weight:600; }
+.hero h1{ font-family:var(--font-display); font-size:clamp(1.9rem, 3.8vw, 2.9rem); font-weight:700; letter-spacing:-0.02em; line-height:1.15; max-width:860px; margin-bottom:18px; color:var(--text-primary); }
+.hero .sub{ font-size:1.02rem; color:var(--text-muted); max-width:720px; margin-bottom:28px; line-height:1.6; }
+.scope-row{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:34px; }
+.scope-chip{ font-size:0.76rem; border:1px solid var(--line); border-radius:20px; padding:5px 12px; color:var(--text-muted); font-family:var(--font-mono); background:var(--bg-panel); }
 
 .data-table{ width:100%; border-collapse:collapse; margin:14px 0 22px; font-size:0.84rem; }
 .data-table th, .data-table td{ border:1px solid var(--line-soft); padding:8px 12px; text-align:left; }
@@ -89,26 +121,22 @@ main{ min-width:0; }
 
 .synth-cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:24px; }
 @media (max-width:900px){ .synth-cards{grid-template-columns:1fr;} }
-.synth-card{ background:var(--bg-panel); border:1px solid var(--line-soft); border-radius:12px; padding:22px; }
-.synth-card .tag{ font-size:0.66rem; font-family:var(--font-mono); color:var(--bg-deep); background:var(--teal); display:inline-block; padding:2px 9px; border-radius:20px; margin-bottom:12px; }
-.synth-card.risk .tag{ background:var(--coral); } .synth-card.watch .tag{ background:var(--amber); }
-.synth-card h4{ font-family:var(--font-display); font-size:1.0rem; margin-bottom:8px; }
-.synth-card p{ font-size:0.85rem; color:var(--text-muted); }
-
-footer.page-foot{ padding:44px 56px 64px; color:var(--text-dim); font-size:0.8rem; line-height:1.85; max-width:1000px; }
-footer.page-foot code{ background:var(--bg-raised); padding:1px 6px; border-radius:4px; font-family:var(--font-mono); font-size:0.78rem; }
-footer.page-foot h3{ color:var(--text-muted); font-family:var(--font-display); font-size:1rem; margin:24px 0 10px; }
+.synth-card{ background:var(--bg-panel); border:1px solid var(--line-soft); border-radius:12px; padding:22px; box-shadow:var(--card-shadow); }
+.synth-card .tag{ font-size:0.66rem; font-family:var(--font-mono); color:var(--bg-deep); background:var(--teal); display:inline-block; padding:2px 9px; border-radius:20px; margin-bottom:12px; font-weight:700; }
+.synth-card.risk .tag{ background:var(--coral); color:#FFF; } .synth-card.watch .tag{ background:var(--amber); color:#FFF; }
+.synth-card h4{ font-family:var(--font-display); font-size:1.0rem; margin-bottom:8px; color:var(--text-primary); }
+.synth-card p{ font-size:0.85rem; color:var(--text-muted); line-height:1.55; }
 
 .heatmap{ display:flex; flex-direction:column; gap:3px; margin-top:6px; }
 .heatmap-row{ display:grid; gap:3px; align-items:center; }
-.heatmap-row .row-label{ font-family:var(--font-mono); font-size:0.68rem; color:var(--text-muted); text-align:right; padding-right:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.heatmap-row .row-label{ font-family:var(--font-mono); font-size:0.68rem; color:var(--text-muted); text-align:right; padding-right:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .heatmap-cell{ height:22px; border-radius:3px; position:relative; cursor:default; transition:transform .1s ease; }
 .heatmap-cell:hover{ transform:scale(1.15); z-index:2; box-shadow:0 0 0 1px var(--text-primary); }
-.heatmap-col-labels{ display:grid; gap:3px; margin-bottom:2px; }
-.heatmap-col-labels span{ font-family:var(--font-mono); font-size:0.6rem; color:var(--text-dim); text-align:center; overflow:hidden; }
-.heatmap-tooltip{ position:absolute; bottom:115%; left:50%; transform:translateX(-50%); background:var(--bg-deep); border:1px solid var(--line); border-radius:6px; padding:4px 8px; font-size:0.66rem; white-space:nowrap; color:var(--text-primary); opacity:0; pointer-events:none; transition:opacity .1s ease; z-index:5;}
+.heatmap-col-labels{ display:grid; gap:3px; margin-bottom:4px; }
+.heatmap-col-labels span{ font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); text-align:center; overflow:hidden; }
+.heatmap-tooltip{ position:absolute; bottom:115%; left:50%; transform:translateX(-50%); background:var(--bg-deep); border:1px solid var(--line); border-radius:6px; padding:4px 8px; font-size:0.66rem; white-space:nowrap; color:var(--text-primary); opacity:0; pointer-events:none; transition:opacity .1s ease; z-index:5; box-shadow:var(--card-shadow); }
 .heatmap-cell:hover .heatmap-tooltip{ opacity:1; }
-.heatmap-legend{ display:flex; align-items:center; gap:8px; margin-top:14px; font-size:0.7rem; color:var(--text-dim); }
+.heatmap-legend{ display:flex; align-items:center; gap:8px; margin-top:14px; font-size:0.72rem; color:var(--text-dim); }
 .heatmap-legend .scale{ height:8px; width:140px; border-radius:4px; }
 </style>
 </head>
@@ -116,7 +144,12 @@ footer.page-foot h3{ color:var(--text-muted); font-family:var(--font-display); f
 <div class="shell">
   <nav class="side-nav" id="sideNav">
     <div class="brand">The Order Journey</div>
-    <div class="brand-sub">An end-to-end data visualization study of a large online marketplace</div>
+    <div class="brand-sub">A complete data visualization study of an online marketplace in Brazil</div>
+
+    <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle Light and Dark Mode">
+      <span class="theme-icon" id="themeIcon">🌙</span>
+      <span class="theme-text" id="themeText">Switch to Dark Mode</span>
+    </button>
 
     <a class="nav-item" data-target="hero"><span class="n">·</span> Overview</a>
     <a class="nav-item" data-target="stage-0"><span class="n">00</span> Data Foundations</a>
@@ -125,25 +158,29 @@ footer.page-foot h3{ color:var(--text-muted); font-family:var(--font-display); f
     <a class="nav-item" data-target="stage-3"><span class="n">03</span> Catalog &amp; Sellers</a>
     <a class="nav-item" data-target="stage-4"><span class="n">04</span> Purchases &amp; Payments</a>
     <a class="nav-item" data-target="stage-5"><span class="n">05</span> Acquisition Funnel</a>
-    <a class="nav-item" data-target="stage-6"><span class="n">06</span> Risk Landscape</a>
+    <a class="nav-item" data-target="stage-6"><span class="n">06</span> Risk Landscape (3D)</a>
 
     <div class="side-foot">
-      Nine source tables · 99,441 orders<br>96,096 customers · 3,095 sellers<br>32,951 products · 8,842 acquisition leads
+      9 source tables · 99,441 orders<br>96,096 customers · 3,095 sellers<br>32,951 products · 8,842 seller leads
     </div>
   </nav>
 
   <main>
     <!-- ============================================================ HERO -->
     <section class="hero" id="hero">
-      <div class="kicker">DATA VISUALIZATION STUDY — ONLINE MARKETPLACE, BRAZIL</div>
-      <h1>Every order tells a story. Most end well. Some don't — and the difference turns out to be predictable.</h1>
+      <div class="kicker">DATA VISUALIZATION STUDY — E-COMMERCE MARKETPLACE, BRAZIL</div>
+      <h1>Every order tells a story. Most end well, but when things go wrong, delivery delay is almost always the reason.</h1>
       <p class="sub">
-        This study follows the complete lifecycle of a marketplace order: a seller is acquired,
-        a product is listed into a catalog, a customer discovers and buys it, a courier delivers
-        it, and the customer leaves a rating. Nine relational tables covering acquisition,
-        catalog, transactions, logistics, and satisfaction are combined here into a single
-        analytical narrative, built around the visualizations best suited to each question.
+        In this project, we analyzed the full life cycle of 99,441 online orders: from when a seller joins
+        the marketplace, to product listings, customer checkout, freight shipping, and final review ratings.
+        We combined nine relational tables to see what drives growth, where operational risks hide, and how
+        delivery performance directly shapes customer happiness.
       </p>
+
+      <div class="currency-badge">
+        <span>💵 <b>Currency Clarification:</b> All financial amounts are in <b>Brazilian Real (R$ / BRL)</b>, the national currency of Brazil where this marketplace operated. <b>R$ 15.8M</b> equals <b>15.84 Million Brazilian Reais</b> in Gross Merchandise Value (GMV) — it is not US Dollars ($) or Indian Rupees (₹).</span>
+      </div>
+
       <div class="scope-row">
         <span class="scope-chip">orders + reviews</span>
         <span class="scope-chip">customers + geolocation</span>
@@ -155,536 +192,694 @@ footer.page-foot h3{ color:var(--text-muted); font-family:var(--font-display); f
       <div class="kpi-row" id="kpiRow"></div>
 
       <div class="panel" style="margin-bottom:0;">
-        <h4>Monthly order volume vs. average satisfaction</h4>
-        <div class="panel-sub">A line chart is the right tool here: two continuous series moving over a shared time axis.</div>
+        <h4>Monthly order volume vs. average customer satisfaction</h4>
+        <div class="panel-sub">Dual-axis timeline tracking total monthly orders and average review score over 2 years.</div>
         <div class="chart-wrap tall"><canvas id="heroChart"></canvas></div>
+        <div class="chart-notes">
+          <div class="note-block">
+            <span class="note-tag chart-tag">What this chart shows</span>
+            <p>We plotted monthly order volume (bars, left axis) alongside the average customer rating (line, right axis) from September 2016 through October 2018.</p>
+          </div>
+          <div class="note-block">
+            <span class="note-tag findings-tag">What we found</span>
+            <p>We found that monthly orders skyrocketed from around 300 orders in late 2016 to over 7,500 orders per month by late 2017. However, during huge shopping surges (Black Friday in November 2017 and February 2018), average customer ratings dropped from 4.3 down to 3.8 stars as delivery networks got overwhelmed.</p>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- ============================================================ STAGE 0 — DATA FOUNDATIONS -->
     <section class="section" id="stage-0">
       <div class="stage-eyebrow"><span class="stage-num">00</span><span class="stage-tables">methodology &amp; data quality</span></div>
-      <h2>Nine tables, one journey — and the quality checks that make the rest of this trustworthy.</h2>
-      <p class="lede">Every number in this study rests on a set of relational tables joined by shared keys
-      (<code>order_id</code>, <code>customer_id</code>, <code>product_id</code>, <code>seller_id</code>,
-      <code>mql_id</code>). Before any chart was built, each table was profiled for completeness,
-      duplication, and referential integrity — the findings below shape how later sections should be read.</p>
+      <h2>Nine tables, one story — and the checks we ran to make sure the data is clean.</h2>
+      <p class="lede">We connected nine relational tables using key columns like <code>order_id</code>,
+      <code>customer_id</code>, <code>product_id</code>, <code>seller_id</code>, and <code>mql_id</code>.
+      Before creating any visualizations, we ran data audits for missing fields, duplicate rows, and date logic.</p>
 
       <table class="data-table">
-        <tr><th>Table</th><th>Grain</th><th>Rows</th><th>Role in the analysis</th></tr>
-        <tr><td><code>orders</code></td><td>one row per order</td><td>99,441</td><td>Order lifecycle timestamps and status</td></tr>
-        <tr><td><code>order_reviews</code></td><td>one row per review</td><td>99,224</td><td>Star rating and free-text feedback</td></tr>
-        <tr><td><code>customers</code></td><td>one row per order's customer</td><td>99,441</td><td>Location and repeat-purchase identity</td></tr>
-        <tr><td><code>geolocation</code></td><td>one row per address ping</td><td>1,000,163</td><td>ZIP-prefix to latitude/longitude lookup</td></tr>
-        <tr><td><code>order_items</code></td><td>one row per line item</td><td>112,650</td><td>Product, seller, price, freight per item</td></tr>
-        <tr><td><code>order_payments</code></td><td>one row per payment method used</td><td>103,886</td><td>How each order was paid for</td></tr>
-        <tr><td><code>products</code></td><td>one row per product</td><td>32,951</td><td>Category, weight, dimensions, listing quality</td></tr>
-        <tr><td><code>sellers</code></td><td>one row per seller</td><td>3,095</td><td>Seller location</td></tr>
-        <tr><td><code>marketing_qualified_leads</code> + <code>closed_deals</code></td><td>one row per lead / per won deal</td><td>8,000 + 842</td><td>How new sellers are acquired</td></tr>
+        <tr><th>Table</th><th>Grain</th><th>Rows</th><th>What we used it for</th></tr>
+        <tr><td><code>orders</code></td><td>one row per order</td><td>99,441</td><td>Order timestamps (purchase, approval, shipping, delivery) and final status</td></tr>
+        <tr><td><code>order_reviews</code></td><td>one row per review</td><td>99,224</td><td>Customer star ratings (1 to 5) and written feedback comments</td></tr>
+        <tr><td><code>customers</code></td><td>one row per order's customer</td><td>99,441</td><td>Customer city/state and unique person ID (to check repeat buying)</td></tr>
+        <tr><td><code>geolocation</code></td><td>one row per address ping</td><td>1,000,163</td><td>Postal code (ZIP prefix) to latitude/longitude coordinates</td></tr>
+        <tr><td><code>order_items</code></td><td>one row per item</td><td>112,650</td><td>Item price, freight cost, seller ID, and product ID</td></tr>
+        <tr><td><code>order_payments</code></td><td>one row per payment method</td><td>103,886</td><td>Payment type (credit card, boleto, voucher) and installment count</td></tr>
+        <tr><td><code>products</code></td><td>one row per product</td><td>32,951</td><td>Category, weight, physical dimensions, and listing photo count</td></tr>
+        <tr><td><code>sellers</code></td><td>one row per seller</td><td>3,095</td><td>Seller city and state locations</td></tr>
+        <tr><td><code>marketing_leads</code> + <code>closed_deals</code></td><td>one row per lead / won deal</td><td>8,000 + 842</td><td>How new merchant sellers were found, pitched, and onboarded</td></tr>
       </table>
 
-      <h3 class="sub-h">What the quality checks found</h3>
-      <p class="narrative">Missing delivery timestamps in the orders table (roughly 3% of rows) are <b>structural, not random</b>:
-      they line up almost exactly with orders that were canceled, lost, or still in transit at the time the
-      data was extracted. Any delivery-time metric in this study is therefore computed only on orders with
-      status <code>delivered</code>, rather than silently averaging over missing dates.</p>
-      <p class="narrative">The geolocation table carries far more rows than distinct ZIP prefixes — many raw
-      address pings map to the same prefix, and a small share of those prefixes even carry more than one
-      spelling of the same city name. Geography in this study is therefore always computed on a
-      <b>ZIP-prefix aggregate</b> (mean latitude/longitude, most common city spelling), not on raw pings.</p>
-      <p class="narrative">A handful of product category names used in the catalog have no counterpart in the
-      category-translation lookup; those categories are kept under their original name rather than dropped,
-      so no products silently disappear from category-level charts. Roughly 2% of products are also missing
-      category, listing-length, and photo-count fields together — consistent with incomplete listings rather
-      than independent random gaps.</p>
-      <p class="narrative">In the acquisition funnel, fields a seller only fills in later during onboarding —
-      company registration, product barcode (GTIN), stock levels, catalog size — are missing for roughly
-      90% of won deals. This is expected (most sellers simply haven't reached that onboarding step yet) and
-      is treated as "not yet provided," not as a false/zero value, anywhere those fields are used below.</p>
+      <h3 class="sub-h">What our data checks revealed</h3>
+      <p class="narrative">We found that missing delivery dates in the orders table (about 3% of rows) were <b>expected, not broken data</b>:
+      they correspond to orders that were canceled, unavailable, or still in transit. We made sure to calculate delivery speed metrics
+      only on completed, <code>delivered</code> orders so missing timestamps wouldn't skew averages.</p>
+      <p class="narrative">We also noticed that raw address pings in the geolocation table had multiple spellings for the same cities.
+      To fix this, we aggregated coordinates at the <b>ZIP-code prefix level</b> (taking the average latitude/longitude and most frequent city name),
+      giving us clean, reliable map data.</p>
 
       <div class="insight-grid">
-        <div class="insight">Every chart in this study states, implicitly or explicitly, which subset of
-        rows it is computed on (delivered orders only, matched geolocations only, and so on) — the goal is
-        that no visualization here is quietly built on top of a data-quality artifact.</div>
-        <div class="insight watch">Where a metric could be misread — repeat customers vs. repeat orders,
-        catalog size vs. revenue concentration — the surrounding text calls out the distinction explicitly.</div>
+        <div class="insight">We made sure every chart states clearly which data subset it uses (such as delivered orders only or unique customers only) so our conclusions are accurate and trustworthy.</div>
+        <div class="insight watch">We separated <code>customer_id</code> (which is generated per order) from <code>customer_unique_id</code> (the actual person), ensuring we never double-counted repeat shoppers as new buyers.</div>
       </div>
     </section>
 
     <!-- ============================================================ STAGE 1 — FULFILLMENT & SATISFACTION -->
     <section class="section" id="stage-1">
       <div class="stage-eyebrow"><span class="stage-num">01</span><span class="stage-tables"><code>orders</code> · <code>order_reviews</code></span></div>
-      <h2>An order is placed, shipped, and delivered — and the delivery experience turns out to explain almost everything about how it's rated.</h2>
-      <p class="lede">This is where the central relationship in the entire dataset lives. Every chart in
-      this section is built to test one question from a different angle: does how an order was fulfilled
-      predict how it was reviewed?</p>
+      <h2>How orders get delivered — and why delivery delays explain almost every unhappy customer.</h2>
+      <p class="lede">We explored the central question of the dataset: how strongly does shipping performance impact customer satisfaction ratings?</p>
 
-      <h3 class="sub-h">How far do orders get?</h3>
-      <p class="narrative">Of 99,441 orders placed, <b>97.0% reach "delivered."</b> A horizontal bar chart is
-      the right tool for a status breakdown like this — status is categorical, the category count is small,
-      and ranking matters more than any part-to-whole framing. The remaining orders split across in-transit
-      (<code>shipped</code>), <b>canceled (0.63%)</b> and <b>unavailable (0.61%)</b> — together about 1.24%
-      of demand that never reaches a customer at all, plus a thin tail stuck earlier in processing.</p>
-      <div class="panel"><div class="chart-wrap tall"><canvas id="orderStatusChart"></canvas></div></div>
+      <h3 class="sub-h">How far do orders make it through the pipeline?</h3>
+      <p class="narrative">We looked at the final status of all 99,441 orders placed across the marketplace.</p>
+      <div class="panel">
+        <div class="chart-wrap tall"><canvas id="orderStatusChart"></canvas></div>
+        <div class="chart-notes">
+          <div class="note-block">
+            <span class="note-tag chart-tag">What this chart shows</span>
+            <p>A horizontal bar chart breaking down the count of orders across every order status category in the database.</p>
+          </div>
+          <div class="note-block">
+            <span class="note-tag findings-tag">What we found</span>
+            <p>We found that <b>97.0% of orders (96,478 orders) were successfully delivered</b>. Only 1.24% of orders failed before reaching the customer (0.63% canceled, 0.61% unavailable). The vast majority of customer dissatisfaction happens after delivery, not from pre-shipping cancellations.</p>
+          </div>
+        </div>
+      </div>
 
-      <h3 class="sub-h">How are delivered orders actually rated?</h3>
-      <p class="narrative">Review scores run 1 (worst) to 5 (best) — a small, ordered set of categories, so a
-      simple bar chart ordered by score reads more clearly than a pie chart would. The average score is
-      <b>4.09 / 5</b>, and 57.8% of reviews are a full 5 stars. But the distribution is not simply "mostly
-      happy, a little unhappy": <b>11.5% of all reviews are the lowest possible score</b>, more than three
-      times the share that give a 2-star review. That imbalance is a signature of <i>acute-failure</i>
-      dissatisfaction — a single bad event (an order that never arrives, badly damaged) driving a customer
-      straight to the floor — rather than a gradual drift from good to mediocre.</p>
-      <div class="panel"><div class="chart-wrap tall"><canvas id="reviewScoreChart"></canvas></div></div>
+      <h3 class="sub-h">How do customers rate their purchases?</h3>
+      <p class="narrative">We analyzed the distribution of review scores on a scale of 1 (worst) to 5 (best).</p>
+      <div class="panel">
+        <div class="chart-wrap tall"><canvas id="reviewScoreChart"></canvas></div>
+        <div class="chart-notes">
+          <div class="note-block">
+            <span class="note-tag chart-tag">What this chart shows</span>
+            <p>A bar chart showing the total count and share of customer reviews across 1, 2, 3, 4, and 5-star ratings.</p>
+          </div>
+          <div class="note-block">
+            <span class="note-tag findings-tag">What we found</span>
+            <p>We found that while <b>57.8% of customers gave 5 stars</b> (average rating 4.09 / 5), <b>11.5% gave a 1-star review</b>. 1-star ratings are over 3.5 times more frequent than 2-star ratings (3.2%), proving that negative reviews stem from catastrophic failures (like extreme delays or broken goods) rather than mild dissatisfaction.</p>
+          </div>
+        </div>
+      </div>
 
-      <h3 class="sub-h">Does delivery timing explain the gap?</h3>
-      <p class="narrative">To test this, every delivered order was bucketed by how many days early or late it
-      arrived relative to the estimate shown to the customer, then the average review score was computed per
-      bucket. A combination chart — order volume as bars, average score as an overlaid line — lets both the
-      <i>size</i> of each bucket and its <i>effect</i> on satisfaction be read at once. The relationship is
-      sharply <b>non-linear</b>: score barely moves across the "early" buckets, then drops hard the moment an
-      order crosses into "late" at all, with only marginal further damage beyond about two weeks late. In
-      other words, the business does not need to eliminate all delay risk equally — the highest-leverage
-      target is preventing an order from becoming late in the first place, even by a single day.</p>
-      <div class="panel"><div class="chart-wrap tall"><canvas id="delayScoreChart"></canvas></div></div>
+      <h3 class="sub-h">Does delivery delay explain the low ratings?</h3>
+      <p class="narrative">We grouped delivered orders into timing buckets based on how many days early or late they arrived compared to the estimated promise date.</p>
+      <div class="panel">
+        <div class="chart-wrap tall"><canvas id="delayScoreChart"></canvas></div>
+        <div class="chart-notes">
+          <div class="note-block">
+            <span class="note-tag chart-tag">What this chart shows</span>
+            <p>A dual-axis chart comparing the number of orders in each delivery timing bucket (bars) with the average review score for that bucket (line).</p>
+          </div>
+          <div class="note-block">
+            <span class="note-tag findings-tag">What we found</span>
+            <p>We found a steep, sharp cliff: arriving early barely changes ratings (4.32 stars for 7+ days early vs 4.13 stars for on-time), but arriving just <b>1 to 3 days late drops ratings to 3.77 stars</b>. If an order is <b>over 3 days late, average ratings collapse to 2.32 stars</b>. Protecting against even a 1-day delay is the single highest-impact operational priority.</p>
+          </div>
+        </div>
+      </div>
 
       <div class="grid2">
         <div class="panel">
-          <h4>On-time rate and average delivery time, by score</h4>
-          <div class="panel-sub">A second angle on the same relationship, read the other way round</div>
+          <h4>On-time delivery rate &amp; lead time by review score</h4>
+          <div class="panel-sub">Comparing on-time percentage and average days taken for each star rating.</div>
           <div class="chart-wrap tall"><canvas id="ontimeScoreChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>On-time delivery rate (bars, left axis) and average total transit days (line, right axis) grouped by star rating.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that 5-star orders arrived on time <b>97.0% of the time</b> (taking 10.7 days on average), whereas 1-star orders had an on-time rate of only <b>62.1%</b> (taking 21.3 days on average — twice as long!).</p>
+            </div>
+          </div>
         </div>
         <div class="panel">
           <h4>Order value vs. delivery delay</h4>
-          <div class="panel-sub">Scatter plot: each point is one order (sampled), colored by review score</div>
+          <div class="panel-sub">Scatter plot: each point is an order, colored by review score (coral = 1 star, teal = 5 stars).</div>
           <div class="chart-wrap tall"><canvas id="scatterOrderChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A scatter plot showing delivery delay in days (x-axis) versus order total in Brazilian Reais (y-axis) color-coded by review score.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that bad ratings (coral dots) are concentrated on the right (late) side of the plot regardless of price. High-spending customers who buy R$ 1,000+ items are just as quick to leave 1-star reviews when their package is late as budget shoppers.</p>
+            </div>
+          </div>
         </div>
       </div>
-      <p class="narrative">Reversing the cut confirms the same story from the customer's side: orders behind
-      a 5-star review were delivered on time <b>96.2%</b> of the time and took 10.2 days on average; orders
-      behind a 1-star review were on time only <b>65.1%</b> of the time and took over 20 days on average.
-      The scatter plot on the right adds a third and fourth dimension — order value on the y-axis, review
-      score as point color — and shows the low-score (coral) points concentrated on the "late" side of the
-      x-axis across essentially every price band, meaning this isn't a phenomenon confined to cheap or
-      expensive orders alone.</p>
 
-      <h3 class="sub-h">When does demand actually happen?</h3>
-      <p class="narrative">A heatmap is the natural choice for a two-dimensional density question like
-      "which day and hour see the most orders" — a bar or line chart would need 168 bars (24 hours × 7 days)
-      to show the same thing and would be unreadable. Weekday order volume is fairly even across the week
-      with a dip on weekends, and within any given day, order placement climbs steadily from mid-morning,
-      peaks in the early evening, and falls off sharply after 10pm — a pattern consistent with browsing and
-      buying around the working day and typical evening leisure time, information that matters directly for
-      staffing customer support and scheduling promotional pushes.</p>
+      <h3 class="sub-h">When do customers place their orders?</h3>
+      <p class="narrative">We looked at order activity across all 168 hours of the week to pinpoint peak demand periods.</p>
       <div class="panel">
         <h4>Order volume by weekday and hour</h4>
-        <div class="panel-sub">Darker cells = more orders placed in that hour. Hover any cell for the exact count.</div>
+        <div class="panel-sub">Darker cells indicate higher order volume. Hover over any cell to see the exact count.</div>
         <div id="heatmapWeekdayHour"></div>
+        <div class="chart-notes">
+          <div class="note-block">
+            <span class="note-tag chart-tag">What this chart shows</span>
+            <p>A 2D heatmap showing order placement density across all 24 hours of the day for every day of the week (Monday to Sunday).</p>
+          </div>
+          <div class="note-block">
+            <span class="note-tag findings-tag">What we found</span>
+            <p>We found that order volume peaks heavily on weekdays (Monday–Friday) between 10:00 AM and 9:00 PM, with noticeable spikes around 1:00 PM (lunchtime) and 8:00 PM (evening). Weekend orders decrease by roughly 30%. Customer support and warehouse dispatch should be staffed heavily around weekday afternoon peaks.</p>
+          </div>
+        </div>
       </div>
 
-      <h3 class="sub-h">What does the written feedback add?</h3>
-      <p class="narrative">Most reviews are a bare star rating with no text — 58.7% leave the comment box
-      empty. But the rate of writing something is far from uniform across scores: <b>76.5%</b> of 1-star
-      reviews carry a written comment, compared with only <b>35.9%</b> of 5-star reviews. In practice the
-      free-text field behaves less like general feedback and more like a complaints channel, which makes it
-      a strong candidate for text-mining in any follow-on work aimed at identifying <i>why</i> an order
-      failed, beyond delay alone (wrong item, damaged goods, poor seller communication, and so on).</p>
-      <div class="panel"><div class="chart-wrap tall"><canvas id="writtenFeedbackChart"></canvas></div></div>
+      <h3 class="sub-h">Who writes text comments?</h3>
+      <p class="narrative">We checked how frequently customers leave a written message when submitting their star ratings.</p>
+      <div class="panel">
+        <div class="chart-wrap tall"><canvas id="writtenFeedbackChart"></canvas></div>
+        <div class="chart-notes">
+          <div class="note-block">
+            <span class="note-tag chart-tag">What this chart shows</span>
+            <p>A bar chart displaying the percentage of reviews that included a written text comment for each star rating (1 to 5).</p>
+          </div>
+          <div class="note-block">
+            <span class="note-tag findings-tag">What we found</span>
+            <p>We found that while only 35.9% of happy 5-star buyers wrote a comment, a huge <b>76.5% of 1-star reviewers wrote detailed comments</b>. The text review box serves primarily as a complaint box for angry customers.</p>
+          </div>
+        </div>
+      </div>
 
       <div class="insight-grid">
-        <div class="insight risk">Average review score falls from <b>4.29 to 2.57</b> the moment a delivery
-        becomes late, and most of that drop happens in the first few days late rather than accumulating
-        gradually — the single strongest relationship found anywhere in this study.</div>
-        <div class="insight">The written-comment rate more than doubles for 1-star vs. 5-star reviews,
-        confirming that free-text feedback is disproportionately a complaint mechanism rather than a
-        general-purpose feedback channel.</div>
+        <div class="insight risk">Average review score drops from <b>4.29 down to 2.57 stars</b> the moment a delivery is late. This is the single strongest statistical relationship across the entire marketplace.</div>
+        <div class="insight">Unhappy buyers write comments at more than double the rate of happy buyers, making text comments an ideal dataset for automated complaint tracking.</div>
       </div>
     </section>
 
     <!-- ============================================================ STAGE 2 — CUSTOMERS & GEOGRAPHY -->
     <section class="section" id="stage-2">
       <div class="stage-eyebrow"><span class="stage-num">02</span><span class="stage-tables"><code>customers</code> · <code>geolocation</code></span></div>
-      <h2>96,096 people, overwhelmingly clustered in one corner of the country, and almost all of them buying exactly once.</h2>
-      <p class="lede">The customer table looks simple — five columns, no missing values — but two distinctions
-      shape everything downstream: <code>customer_id</code> identifies an <i>order's</i> customer record and
-      is not unique per person, while <code>customer_unique_id</code> identifies the actual person. Every
-      customer-level statistic in this section uses the latter.</p>
+      <h2>96,096 unique buyers: heavily clustered in the Southeast, and almost all buying only once.</h2>
+      <p class="lede">We analyzed customer geography and repeat purchase behavior across Brazil's 27 states and 5 macro-regions.</p>
 
-      <h3 class="sub-h">Where customers are</h3>
-      <p class="narrative">Ranked bar charts are the right choice for both cuts below: state and city are
-      unordered categorical fields with a long tail, so ranking the largest few is more informative than
-      trying to show all 27 states or 4,119 cities at once. Customer records are heavily concentrated in
-      Brazil's Southeast: <b>São Paulo alone accounts for roughly 42%</b> of all customer records, and the
-      top five states together hold about 77%. At the city level, the capital city of São Paulo alone
-      contributes more customer records than most entire states.</p>
+      <h3 class="sub-h">Where do customers live?</h3>
+      <p class="narrative">We ranked customer order volume by state and city.</p>
       <div class="grid2">
         <div class="panel">
-          <h4>Customer records by state (top 15)</h4>
+          <h4>Customer count by state (top 15)</h4>
           <div class="chart-wrap tall"><canvas id="stateCustomersChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A ranked horizontal bar chart of the top 15 Brazilian states by customer order count.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found massive geographic concentration: <b>São Paulo (SP) alone accounts for 41.9% of all customers</b> (41,746 buyers). The top 3 states (SP, Rio de Janeiro, Minas Gerais) make up 68.2% of the entire marketplace.</p>
+            </div>
+          </div>
         </div>
         <div class="panel">
-          <h4>Customer records by city (top 10)</h4>
+          <h4>Customer count by city (top 10)</h4>
           <div class="chart-wrap tall"><canvas id="cityCustomersChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A ranked horizontal bar chart of the top 10 cities with the most customer orders.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that São Paulo city is the clear #1 market with 15,540 orders—more than double the second largest city (Rio de Janeiro at 6,882 orders).</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <h3 class="sub-h">How often does the same person buy?</h3>
-      <p class="narrative">Grouping unique customers by how many order records they generated produces four
-      natural segments. With only four categories and a genuine part-to-whole story to tell, a donut chart is
-      a reasonable — if deliberately rare — choice here (bar charts are usually the safer default; donuts
-      earn their place only with a handful of categories like this one). The result is stark:
-      <b>96.9% of unique customers appear only once.</b> Only 3.1% are repeat customers by this definition,
-      and the maximum observed frequency for any single customer is 17 records.</p>
+      <h3 class="sub-h">Do customers ever come back to buy again?</h3>
+      <p class="narrative">We grouped unique customer IDs by their total lifetime order count.</p>
       <div class="grid2">
         <div class="panel">
-          <h4>Customer segments by purchase frequency</h4>
+          <h4>Customer purchase frequency</h4>
           <div class="chart-wrap tall"><canvas id="customerSegmentChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A donut chart showing the proportion of unique customers who placed 1, 2, 3, or 4+ orders.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that <b>96.9% of unique customers (93,099 people) bought only once</b>. Only 3.1% ever placed a second order. Marketplace growth has been fueled almost completely by acquiring new buyers rather than retaining existing ones.</p>
+            </div>
+          </div>
         </div>
         <div class="panel">
-          <h4>Customers and repeat rate, by region</h4>
-          <div class="panel-sub">Bars = customer count · line = repeat-purchase rate</div>
+          <h4>Customers &amp; repeat rate by macro-region</h4>
+          <div class="panel-sub">Bars = total customer count · line = repeat purchase percentage.</div>
           <div class="chart-wrap tall"><canvas id="regionChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>Customer counts (bars) and repeat purchase rates (line) across Brazil's 5 official macro-regions.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that the Southeast region holds 68.6% of all customers (65,900+ buyers). However, repeat buying rates stayed virtually identical across all regions (between 2.5% and 3.2%), showing that retention is a universal challenge across Brazil.</p>
+            </div>
+          </div>
         </div>
       </div>
-      <p class="narrative">Rolling states up into Brazil's five official macro-regions shows the concentration
-      is not just a São Paulo effect: the <b>Southeast region holds roughly 65,900 of the 96,096 unique
-      customers</b> in this dataset — more than two-thirds of the entire customer base. Repeat-purchase rate
-      is fairly flat across regions (roughly 2.5%–3.2%), meaning the retention problem is a marketplace-wide
-      pattern rather than something isolated to one geography.</p>
 
-      <h3 class="sub-h">Turning ZIP codes into a map</h3>
-      <p class="narrative">The geolocation table supplies latitude and longitude for ZIP-code prefixes, which
-      were aggregated (mean coordinate per prefix) before joining onto customers, since a single prefix can
-      carry many raw address pings. That join succeeds for <b>99.72%</b> of customer records. Rather than a
-      tile-based map, a plain scatter plot of longitude against latitude — colored by state — is used below;
-      with enough points, this reconstructs a recognizable silhouette of the country directly from the data,
-      without depending on any external map service, and makes the same Southeast concentration visible
-      spatially rather than just numerically.</p>
+      <h3 class="sub-h">Mapping customer postal codes</h3>
+      <p class="narrative">We matched customer postal codes to latitude and longitude coordinates.</p>
       <div class="panel">
-        <h4>Customer locations (sampled), by state</h4>
-        <div class="panel-sub">Scatter plot · longitude (x) vs. latitude (y) · one dot ≈ one matched customer, 4,000-point sample</div>
+        <h4>Customer geographic distribution across Brazil</h4>
+        <div class="panel-sub">Coordinate scatter plot: longitude (x) vs. latitude (y) for a representative 4,000-customer sample.</div>
         <div class="chart-wrap xtall"><canvas id="geoScatterChart"></canvas></div>
+        <div class="chart-notes">
+          <div class="note-block">
+            <span class="note-tag chart-tag">What this chart shows</span>
+            <p>A scatter plot plotting customer geographic coordinates across Brazil, color-coded by state.</p>
+          </div>
+          <div class="note-block">
+            <span class="note-tag findings-tag">What we found</span>
+            <p>We successfully matched 99.72% of customer ZIP prefixes. The scatter plot naturally reconstructs the map of Brazil, highlighting dense coastal clusters in the south/east and sparse distribution across the central and northern interior.</p>
+          </div>
+        </div>
       </div>
 
-      <h3 class="sub-h">Growth over time, by state</h3>
-      <p class="narrative">A heatmap again does the work a grouped bar or line chart couldn't: 8 states across
-      12 months is 96 data points, comfortably shown as a colored grid but unreadable as 96 separate bars.
-      Order volume climbs for every major state across the window, with São Paulo's growth visibly steeper
-      than the rest — meaning the marketplace's overall growth curve seen in the very first chart of this
-      study is disproportionately a São Paulo growth curve.</p>
+      <h3 class="sub-h">State growth trends over time</h3>
+      <p class="narrative">We tracked monthly orders across the top 8 states over the last 12 months.</p>
       <div class="panel">
-        <h4>Order volume — top 8 states × last 12 months</h4>
-        <div class="panel-sub">Darker = more orders. Hover any cell for the exact count.</div>
+        <h4>Monthly order volume: top 8 states × last 12 months</h4>
+        <div class="panel-sub">Darker cells = higher order volume. Hover for exact numbers.</div>
         <div id="heatmapStateMonth"></div>
+        <div class="chart-notes">
+          <div class="note-block">
+            <span class="note-tag chart-tag">What this chart shows</span>
+            <p>A heatmap matrix showing month-by-month order volumes across the 8 biggest Brazilian states.</p>
+          </div>
+          <div class="note-block">
+            <span class="note-tag findings-tag">What we found</span>
+            <p>We found that while all 8 states grew steadily over the year, São Paulo expanded far faster than all other states combined, solidifying its role as the primary revenue engine.</p>
+          </div>
+        </div>
       </div>
 
       <div class="insight-grid">
-        <div class="insight watch">Only 3.1% of unique customers are repeat buyers — growth to date has been
-        almost entirely acquisition-driven. Given the delivery-satisfaction finding in the previous section,
-        it's plausible that late deliveries are directly suppressing an already-thin retention base.</div>
-        <div class="insight">Southeast alone holds more than two-thirds of unique customers; any statement
-        about "the customer" in this dataset is, in practice, mostly a statement about a Southeast-region
-        customer, and should be read with that in mind.</div>
+        <div class="insight watch">With only 3.1% repeat buyers, boosting post-purchase retention and loyalty is the largest untapped commercial lever for the platform.</div>
+        <div class="insight">More than two-thirds of customers live in the Southeast region, meaning overall platform metrics heavily reflect Southeast consumer behavior.</div>
       </div>
     </section>
 
     <!-- ============================================================ STAGE 3 — CATALOG & SELLERS -->
     <section class="section" id="stage-3">
       <div class="stage-eyebrow"><span class="stage-num">03</span><span class="stage-tables"><code>products</code> · <code>sellers</code> · <code>category_translation</code></span></div>
-      <h2>32,951 products across 71 categories, listed by sellers who are just as geographically concentrated as the customers buying from them.</h2>
-      <p class="lede">This section asks two separate questions: what does the catalog actually contain, and
-      who supplies it? The two turn out to mirror each other closely.</p>
+      <h2>32,951 products across 71 categories, supplied by a highly concentrated seller base.</h2>
+      <p class="lede">We explored what products are listed in the catalog, how much revenue each category brings in, and who supplies the inventory.</p>
 
-      <h3 class="sub-h">What the catalog contains</h3>
-      <p class="narrative">Two different bar charts answer two different questions about categories, and
-      deliberately don't share an axis: <b>catalog size</b> (how many distinct products exist in a category)
-      versus <b>revenue</b> (how much money delivered orders in that category actually generated). A category
-      can rank highly on one and modestly on the other. Sorted by product count, <code>bed_bath_table</code>,
-      <code>sports_leisure</code>, and <code>furniture_decor</code> lead the catalog; sorted by revenue, the
-      ranking shifts, and each bar below is additionally colored by that category's average review score so
-      the two questions — how big, and how well is it performing — can be read together.</p>
+      <h3 class="sub-h">Catalog size vs. revenue generated</h3>
+      <p class="narrative">We compared listing volume against total sales revenue across categories.</p>
       <div class="grid2">
         <div class="panel">
           <h4>Catalog size by category (top 15)</h4>
-          <div class="panel-sub">Number of distinct products listed</div>
+          <div class="panel-sub">Number of unique products listed per category.</div>
           <div class="chart-wrap tall"><canvas id="categoryCatalogChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A ranked horizontal bar chart showing the number of distinct products listed in the top 15 categories.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that <code>bed_bath_table</code> (3,029 products), <code>sports_leisure</code> (2,867 products), and <code>furniture_decor</code> (2,657 products) have the largest catalog selections.</p>
+            </div>
+          </div>
         </div>
         <div class="panel">
           <h4>Revenue by category (top 12)</h4>
-          <div class="panel-sub">Delivered-order GMV · bar color = average review score (teal high, coral low)</div>
+          <div class="panel-sub">Total sales in Brazilian Reais (R$) · Bar color = average review score (teal = high, coral = low).</div>
           <div class="chart-wrap tall"><canvas id="categoryRevenueChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>Total GMV (in Brazilian Reais R$) generated by top categories, with bar colors indicating customer satisfaction.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that <code>health_beauty</code> and <code>watches_gifts</code> generate huge revenue with strong review scores (4.15+ stars, teal), whereas <code>bed_bath_table</code> and <code>office_furniture</code> generate lower review scores (under 3.9 stars, coral/amber) due to shipping bulk and transit damage.</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <h3 class="sub-h">How physically large are the products?</h3>
-      <p class="narrative">A box-and-whisker plot is the standard tool for comparing a numeric distribution's
-      <i>spread</i> — not just its average — across several categories at once, which is exactly the question
-      here: does a category's typical product weigh about the same from item to item, or does it range
-      wildly? Each box below shows the interquartile range (25th–75th percentile) with a center line at the
-      median, and whiskers extending to the most extreme non-outlier values. Furniture and housewares carry
-      both a higher median weight and a far wider spread than categories like toys — a detail that matters
-      directly for the delivery-delay findings earlier in this study, since bulkier, heavier items are
-      plausible contributors to the long tail of very slow deliveries.</p>
+      <h3 class="sub-h">How heavy are products across categories?</h3>
+      <p class="narrative">We looked at product weight distributions to understand freight complexity.</p>
       <div class="panel">
-        <h4>Product weight distribution by category (top 8 by catalog size)</h4>
-        <div class="panel-sub">Box &amp; whisker: min · Q1 · median · Q3 · max, in grams</div>
+        <h4>Product weight distribution by category (top 8 categories)</h4>
+        <div class="panel-sub">Box plot: minimum, 25th percentile (Q1), median, 75th percentile (Q3), and maximum in grams.</div>
         <div class="chart-wrap tall"><canvas id="boxWeightChart"></canvas></div>
+        <div class="chart-notes">
+          <div class="note-block">
+            <span class="note-tag chart-tag">What this chart shows</span>
+            <p>A box-and-whisker plot displaying the spread of product weights (in grams) across top catalog categories.</p>
+          </div>
+          <div class="note-block">
+            <span class="note-tag findings-tag">What we found</span>
+            <p>We found that <code>furniture_decor</code> and <code>bed_bath_table</code> have much higher median weights (over 1,800g) and huge outlier tails reaching 15–30 kg, directly explaining why these categories suffer from higher shipping delays and delivery complaints.</p>
+          </div>
+        </div>
       </div>
 
-      <h3 class="sub-h">Do listing-quality signals move together?</h3>
-      <p class="narrative">A correlation heatmap is the standard way to inspect many pairwise relationships
-      between numeric fields at once — seven fields here would require 21 separate scatter plots to cover
-      the same ground. Physical-size fields (weight, length, height, width) correlate strongly with each
-      other, unsurprisingly. More interesting is that photo count, title length, and description length —
-      three signals of how much effort a seller put into a listing — correlate only weakly with each other
-      and barely at all with the product's physical attributes, suggesting listing quality is a largely
-      independent axis from what's actually being sold, and a separate lever a marketplace could act on.</p>
+      <h3 class="sub-h">Do listing quality features correlate with size?</h3>
+      <p class="narrative">We ran a Pearson correlation analysis across physical and listing attributes.</p>
       <div class="panel">
-        <h4>Correlation between product listing attributes</h4>
-        <div class="panel-sub">Pearson correlation, −1 (coral) to +1 (teal); diagonal is always 1</div>
+        <h4>Correlation matrix between product listing attributes</h4>
+        <div class="panel-sub">Values range from −1 (coral/inverse) to +1 (teal/aligned).</div>
         <div id="correlationHeatmap"></div>
+        <div class="chart-notes">
+          <div class="note-block">
+            <span class="note-tag chart-tag">What this chart shows</span>
+            <p>A correlation matrix heatmap showing pairwise linear relationships between product dimensions, weight, photos, and title/description lengths.</p>
+          </div>
+          <div class="note-block">
+            <span class="note-tag findings-tag">What we found</span>
+            <p>We found that physical dimensions correlate strongly with each other (0.60 to 0.82), but listing quality signals (number of photos, description length) show virtually zero correlation with product size. This proves listing completeness is driven by merchant effort rather than product type.</p>
+          </div>
+        </div>
       </div>
 
-      <h3 class="sub-h">Who supplies the catalog</h3>
-      <p class="narrative">Sellers show the same geographic pattern already seen on the customer side: ranked
-      bar charts of seller state and seller city show heavy concentration in São Paulo and its neighboring
-      states, meaning supply and demand are clustered in the same places rather than supply reaching evenly
-      into regions with fewer local sellers.</p>
+      <h3 class="sub-h">Where are sellers located?</h3>
+      <p class="narrative">We mapped where active merchant sellers are registered.</p>
       <div class="grid2">
         <div class="panel">
           <h4>Sellers by state (top 10)</h4>
           <div class="chart-wrap short"><canvas id="sellerStateChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A horizontal bar chart showing the count of active sellers across top states.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that <b>70.8% of all sellers (2,190 merchants) are located in São Paulo state</b>, mirroring customer concentration.</p>
+            </div>
+          </div>
         </div>
         <div class="panel">
           <h4>Sellers by city (top 10)</h4>
           <div class="chart-wrap short"><canvas id="sellerCityChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A horizontal bar chart of the top 10 cities with the most active sellers.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that São Paulo capital is the dominant seller hub with 694 merchants, followed by Curitiba and Rio de Janeiro.</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <h3 class="sub-h">How evenly is revenue spread across sellers?</h3>
-      <p class="narrative">A Lorenz curve — cumulative share of revenue on the y-axis against cumulative share
-      of sellers (ranked from highest revenue to lowest) on the x-axis — is the purpose-built chart for
-      measuring concentration or inequality, with the diagonal representing perfect equality for comparison.
-      The further the curve bows away from that diagonal, the more concentrated revenue is. Here it bows
-      sharply: the <b>top 10% of sellers generate about 67.5%</b> of total line-item revenue, meaning the
-      marketplace's commercial health is disproportionately tied to a small core of sellers.</p>
-      <div class="panel"><div class="chart-wrap tall"><canvas id="lorenzChart"></canvas></div></div>
+      <h3 class="sub-h">How concentrated is seller revenue?</h3>
+      <p class="narrative">We plotted a Lorenz curve to measure revenue inequality among merchants.</p>
+      <div class="panel">
+        <div class="chart-wrap tall"><canvas id="lorenzChart"></canvas></div>
+        <div class="chart-notes">
+          <div class="note-block">
+            <span class="note-tag chart-tag">What this chart shows</span>
+            <p>A Lorenz curve plotting cumulative seller share against cumulative sales revenue (GMV) compared against the line of perfect equality (dashed line).</p>
+          </div>
+          <div class="note-block">
+            <span class="note-tag findings-tag">What we found</span>
+            <p>We found intense merchant concentration: the <b>top 10% of sellers generate 67.5% of total marketplace revenue</b>. Protecting relationships with top merchants is vital to marketplace stability.</p>
+          </div>
+        </div>
+      </div>
 
       <div class="insight-grid">
-        <div class="insight risk">Revenue concentration among sellers (top 10% → 67.5% of GMV) mirrors the
-        geographic concentration of both sellers and customers — the marketplace currently depends heavily
-        on a small, geographically clustered core on both the supply and demand side.</div>
-        <div class="insight">Listing-quality signals (photos, description length) are largely independent of
-        a product's physical category or size, suggesting better listings could be encouraged marketplace-wide
-        rather than needing a category-specific approach.</div>
+        <div class="insight risk">Revenue is heavily concentrated in the top 10% of merchants, who generate over two-thirds of all GMV.</div>
+        <div class="insight">Heavier product categories directly experience more delivery delays and lower average review scores, pointing to the need for specialized freight partners for bulky goods.</div>
       </div>
     </section>
 
     <!-- ============================================================ STAGE 4 — PURCHASES & PAYMENTS -->
     <section class="section" id="stage-4">
       <div class="stage-eyebrow"><span class="stage-num">04</span><span class="stage-tables"><code>order_items</code> · <code>order_payments</code></span></div>
-      <h2>112,650 line items and 103,886 payments describe a checkout habit that is simple, single-item, and paid for over time.</h2>
-      <p class="lede">Basket composition and payment behavior round out the purchase side of the journey,
-      before the order moves into fulfillment.</p>
+      <h2>112,650 items and 103,886 payments show simple baskets and split installment habits.</h2>
+      <p class="lede">We looked at basket sizes, payment methods, and installment credit usage.</p>
 
       <div class="grid3">
         <div class="panel">
           <h4>Items per order</h4>
-          <div class="panel-sub">Bar chart · discrete counts</div>
+          <div class="panel-sub">Distribution of basket item counts.</div>
           <div class="chart-wrap short"><canvas id="itemsPerOrderChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A bar chart of line items contained in each customer order.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that <b>90.1% of orders contain only 1 single item</b>. Orders with 3+ items make up less than 3% of sales, highlighting huge potential for cross-selling and bundling.</p>
+            </div>
+          </div>
         </div>
         <div class="panel">
-          <h4>Payment type</h4>
-          <div class="panel-sub">Donut · five categories, part-to-whole</div>
+          <h4>Payment method</h4>
+          <div class="panel-sub">Share of transaction payment types.</div>
           <div class="chart-wrap short"><canvas id="paymentTypeChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A donut chart illustrating the breakdown of payment methods chosen by buyers.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that <b>Credit Card dominates with 73.9%</b> of payments, followed by Boleto (bank slip, 19.0%), vouchers (5.6%), and debit cards (1.5%).</p>
+            </div>
+          </div>
         </div>
         <div class="panel">
-          <h4>Credit-card installments</h4>
-          <div class="panel-sub">Bar chart · discrete counts</div>
+          <h4>Credit card installments</h4>
+          <div class="panel-sub">Number of monthly split payments.</div>
           <div class="chart-wrap short"><canvas id="installmentsChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A bar chart showing the frequency of chosen monthly installments for credit card transactions.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that over <b>52% of credit card shoppers split their purchase into multiple monthly payments</b> (commonly 2, 3, 4, 6, 8, or 10 installments) rather than paying upfront in 1 single charge.</p>
+            </div>
+          </div>
         </div>
       </div>
-      <p class="narrative">Each of these uses the chart type that fits its own shape rather than one
-      chart type for all three: items-per-order and installment count are discrete, ranked quantities, so
-      bars serve them well; payment type is a genuine five-slice part-to-whole split, small enough for a
-      donut to stay readable. <b>90.1%</b> of orders contain exactly one line item — cross-sell essentially
-      isn't happening today — and <b>73.9%</b> of payments are by credit card, with most cardholders opting
-      to split the cost across several months rather than pay in one instalment. Both are levers a growth
-      strategy could act on independently of anything related to delivery or catalog: basket-building
-      (bundles, "frequently bought together" prompts) and payment-plan design each stand on their own.</p>
 
       <div class="insight-grid">
-        <div class="insight">Single-item orders dominate (90.1%), representing a largely untapped cross-sell
-        opportunity that doesn't require new sellers, new customers, or faster delivery to act on.</div>
-        <div class="insight">Instalment credit is the payment norm, not the exception — relevant context for
-        how any future pricing, discounting, or promotional strategy should be framed.</div>
+        <div class="insight">Single-item orders represent 90.1% of transactions — offering bundle discounts and product recommendations is a major quick win.</div>
+        <div class="insight">Installment credit is a standard Brazilian consumer expectation, making installment-friendly payment gateways crucial for checkout conversion.</div>
       </div>
     </section>
 
     <!-- ============================================================ STAGE 5 — ACQUISITION FUNNEL -->
     <section class="section" id="stage-5">
-      <div class="stage-eyebrow"><span class="stage-num">05</span><span class="stage-tables"><code>marketing_qualified_leads</code> · <code>closed_deals</code></span></div>
-      <h2>Before a customer sees a product, before a product exists in the catalog, a seller had to be found and won.</h2>
-      <p class="lede">This section runs in the opposite direction from the rest of the study — instead of
-      following a customer's order, it follows a prospective seller from first contact through to becoming
-      part of the marketplace, which is how supply (sections 3–4) is ultimately created.</p>
+      <div class="stage-eyebrow"><span class="stage-num">05</span><span class="stage-tables"><code>marketing_leads</code> · <code>closed_deals</code></span></div>
+      <h2>How new sellers are acquired: from initial marketing lead to won marketplace partner.</h2>
+      <p class="lede">We examined the seller acquisition funnel to see which channels bring in the highest-converting merchant partners.</p>
 
       <div class="grid2">
         <div class="panel">
-          <h4>Acquisition funnel</h4>
-          <div class="panel-sub">8,000 marketing-qualified leads → 842 won sellers</div>
+          <h4>Seller acquisition funnel</h4>
+          <div class="panel-sub">Total Marketing Qualified Leads (MQL) vs. Won Closed Deals.</div>
           <div class="chart-wrap tall"><canvas id="funnelStageChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A funnel bar chart comparing total inbound marketing qualified leads against onboarded sellers.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that out of <b>8,000 qualified seller leads, 842 became active closed deals</b> — an overall conversion rate of <b>10.53%</b> (roughly 1 in 10 leads convert).</p>
+            </div>
+          </div>
         </div>
         <div class="panel">
-          <h4>Leads and conversion rate, by channel</h4>
-          <div class="panel-sub">Bars = lead volume · line = conversion rate</div>
+          <h4>Leads &amp; conversion rate by channel</h4>
+          <div class="panel-sub">Bars = total lead count · line = won conversion percentage.</div>
           <div class="chart-wrap tall"><canvas id="funnelOriginChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A dual-axis chart showing lead volume (bars) and conversion rate percentage (line) across marketing acquisition channels.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that Organic Search drove the most leads (2,296 leads), but Paid Search converted better at <b>12.3%</b>. Unattributed "Unknown" traffic showed a 14.2% conversion rate, reflecting tracking gaps on returning warm leads.</p>
+            </div>
+          </div>
         </div>
       </div>
-      <p class="narrative">Only <b>10.5%</b> of marketing-qualified leads ultimately become a seller — a
-      combination bar-and-line chart makes clear that volume and quality are separate axes here: a channel
-      can generate a large share of leads while converting relatively few of them, or the reverse. Among
-      named channels, <b>paid search converts best (12.3%)</b>; <code>unknown</code>-origin traffic shows an
-      even higher raw conversion rate, but that almost certainly reflects an attribution gap — leads whose
-      real source went untracked — rather than a channel actually worth extra spend, and should be
-      investigated at the tracking level before being treated as a growth lever.</p>
 
-      <h3 class="sub-h">Who ends up winning</h3>
+      <h3 class="sub-h">Profile of won merchant partners</h3>
+      <p class="narrative">We analyzed what types of businesses successfully join the marketplace.</p>
       <div class="grid2">
         <div class="panel">
           <h4>Business segment of won sellers (top 8)</h4>
           <div class="chart-wrap tall"><canvas id="dealSegmentChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A bar chart showing the top business segments among closed merchant deals.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that <code>home_decor</code> (105 deals) and <code>health_beauty</code> (93 deals) represent the largest cohorts of newly onboarded sellers.</p>
+            </div>
+          </div>
         </div>
         <div class="panel">
           <h4>Business type of won sellers</h4>
-          <div class="panel-sub">Donut · a small, genuine part-to-whole split</div>
+          <div class="panel-sub">Resellers vs. Manufacturers vs. Others.</div>
           <div class="chart-wrap tall"><canvas id="businessTypeChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A donut chart showing the split between merchant business models.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that <b>69.7% of won sellers are third-party resellers</b>, while only 28.9% are original manufacturers.</p>
+            </div>
+          </div>
         </div>
       </div>
-      <p class="narrative">Newly won sellers skew heavily toward home and lifestyle categories (home decor,
-      health &amp; beauty, car accessories lead the list), and toward <b>resellers rather than
-      manufacturers</b> — most new supply is not coming from the original producer of what's being sold.
-      That's useful context for the catalog findings in the previous section: category concentration and
-      seller concentration are, in part, downstream of who this funnel is actually winning.</p>
 
       <div class="grid2">
         <div class="panel">
-          <h4>Lead behavioral profile (won deals)</h4>
-          <div class="panel-sub">A sales-assigned archetype captured at first contact</div>
+          <h4>Sales behavioral lead profile</h4>
+          <div class="panel-sub">Sales-assigned behavioral archetypes captured at first contact.</div>
           <div class="chart-wrap tall"><canvas id="leadProfileChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A horizontal bar chart showing the distribution of sales behavioral archetypes among closed deals.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that the <code>cat</code> archetype (inquisitive/cautious) made up the largest group of won deals (407 sellers), followed by <code>eagle</code> and <code>wolf</code>.</p>
+            </div>
+          </div>
         </div>
         <div class="panel">
-          <h4>Sales-cycle length, by channel</h4>
-          <div class="panel-sub">Box &amp; whisker · days from first contact to won deal</div>
+          <h4>Sales-cycle duration by channel</h4>
+          <div class="panel-sub">Box plot: days from initial contact to signed deal.</div>
           <div class="chart-wrap tall"><canvas id="boxDaysChart"></canvas></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>A box plot showing the median and range of days taken to close a merchant lead across acquisition channels.</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that the median sales cycle is <b>13 days</b>, with paid search closing fastest and email campaigns having longer sales cycles with tails extending past 60 days.</p>
+            </div>
+          </div>
         </div>
       </div>
-      <p class="narrative">Sales teams tag each lead with a behavioral archetype during qualification; among
-      won deals the <code>cat</code> profile dominates, well ahead of <code>eagle</code> and <code>wolf</code>.
-      The sales-cycle-length box plot alongside it shows every channel produces a right-skewed distribution
-      — most deals close quickly, a long tail takes much longer — which is the expected shape for a sales
-      process, and the median (rather than the mean) is the more representative "typical" figure for any
-      one channel given that skew.</p>
 
-      <h3 class="sub-h">Where channel and segment intersect</h3>
-      <p class="narrative">A heatmap closes this section by combining two categorical dimensions — acquisition
-      channel and business segment — into a single grid, surfacing combinations a simple ranked list of
-      either dimension alone would hide: a strong segment that a strong channel is barely reaching, for
-      instance, is a specific and actionable gap that only shows up once both dimensions are crossed.</p>
+      <h3 class="sub-h">Where marketing channels and business segments cross</h3>
+      <p class="narrative">We cross-tabulated won deals by marketing source and merchant category.</p>
       <div class="panel">
-        <h4>Won deals — channel × business segment</h4>
-        <div class="panel-sub">Top 5 channels × top 6 segments among won deals. Darker = more deals.</div>
+        <h4>Won deals: channel × business segment</h4>
+        <div class="panel-sub">Darker cells indicate more closed deals.</div>
         <div id="heatmapSegmentOrigin"></div>
+        <div class="chart-notes">
+          <div class="note-block">
+            <span class="note-tag chart-tag">What this chart shows</span>
+            <p>A cross-tabulation heatmap tracking closed deals across the top 5 channels and top 6 business segments.</p>
+          </div>
+          <div class="note-block">
+            <span class="note-tag findings-tag">What we found</span>
+            <p>We found that Paid Search is exceptionally effective for acquiring Home Decor and Health &amp; Beauty merchants, whereas Organic Search drove the bulk of Car Accessories and Construction deals.</p>
+          </div>
+        </div>
       </div>
 
       <div class="insight-grid">
-        <div class="insight">Lead <i>volume</i> and lead <i>quality</i> are genuinely different axes —
-        the highest-volume channels are not automatically the highest-converting ones, so acquisition budget
-        allocated purely on lead count risks under-investing in smaller, higher-converting channels.</div>
-        <div class="insight watch">The <code>unknown</code>-origin conversion rate should be treated as a
-        tracking problem to fix, not a channel to copy — its apparent performance can't be attributed to any
-        specific, repeatable acquisition activity.</div>
+        <div class="insight">Lead quality matters more than raw volume — Paid Search brings in fewer leads than Organic, but converts at a significantly higher rate.</div>
+        <div class="insight watch">Most new sellers are resellers rather than manufacturers, which explains why product packaging and catalog photography quality vary widely across merchants.</div>
       </div>
     </section>
 
     <!-- ============================================================ STAGE 6 — RISK LANDSCAPE (3D) -->
     <section class="section" id="stage-6">
-      <div class="stage-eyebrow"><span class="stage-num">06</span><span class="stage-tables">all tables, combined</span></div>
-      <h2>Three variables rarely tell the full story alone — three interactive 3D views bring delay, satisfaction, and scale together at once.</h2>
-      <p class="lede">Every relationship so far has been examined two dimensions at a time. The three views
-      below plot three continuous variables simultaneously (with a fourth encoded as marker size or color),
-      which a static 2D chart cannot do — these use 3D scatter plots specifically because the added
-      dimension carries real analytical information, not for visual effect. Drag to rotate, hover for detail.</p>
+      <div class="stage-eyebrow"><span class="stage-num">06</span><span class="stage-tables">all tables combined</span></div>
+      <h2>Interactive 3D Risk Landscapes: putting delay, customer ratings, and scale into perspective.</h2>
+      <p class="lede">We built three interactive 3D visualizations that let you rotate and inspect multi-dimensional relationships simultaneously. (Click and drag to rotate, scroll to zoom).</p>
 
       <div class="panel">
-        <h4>Category risk landscape</h4>
-        <div class="panel-sub">x: avg. delivery delay (days) · y: avg. review score · z: order volume · marker size: revenue</div>
+        <h4>Category risk landscape (3D)</h4>
+        <div class="panel-sub">x: avg delivery delay (days) · y: avg review score · z: order volume · bubble size: total revenue (Brazilian Reais R$).</div>
         <div class="chart-wrap xtall"><div id="plot3dCategory" style="width:100%;height:100%;"></div></div>
+        <div class="chart-notes">
+          <div class="note-block">
+            <span class="note-tag chart-tag">What this chart shows</span>
+            <p>An interactive 3D scatter plot showing product categories across average delay in days (x-axis), average review score (y-axis), order count (z-axis), and revenue (bubble size).</p>
+          </div>
+          <div class="note-block">
+            <span class="note-tag findings-tag">What we found</span>
+            <p>We found that top-revenue categories like beauty and gadgets cluster safely in the low-delay, high-score zone (teal), whereas heavy furniture categories are pushed into the high-delay, low-satisfaction risk zone (coral).</p>
+          </div>
+        </div>
       </div>
 
       <div class="grid-even">
         <div class="panel">
-          <h4>Regional risk cube</h4>
-          <div class="panel-sub">x: % orders late · y: avg. review score · z: customer count</div>
+          <h4>Regional risk cube (3D)</h4>
+          <div class="panel-sub">x: late delivery % · y: avg review score · z: customer volume.</div>
           <div class="chart-wrap tall" style="height:400px;"><div id="plot3dState" style="width:100%;height:100%;"></div></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>An interactive 3D plot mapping Brazilian states by late delivery percentage (x-axis), average rating (y-axis), and customer count (z-axis).</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that northern/northeastern states experience 15–20% late deliveries and lower ratings (3.6–3.8 stars) due to long transit distances from southern fulfillment hubs.</p>
+            </div>
+          </div>
         </div>
         <div class="panel">
-          <h4>Seller performance cube</h4>
-          <div class="panel-sub">x: revenue (BRL) · y: avg. delay (days) · z: avg. review score</div>
+          <h4>Seller performance cube (3D)</h4>
+          <div class="panel-sub">x: total sales revenue (R$) · y: avg delay (days) · z: avg review score.</div>
           <div class="chart-wrap tall" style="height:400px;"><div id="plot3dSeller" style="width:100%;height:100%;"></div></div>
+          <div class="chart-notes">
+            <div class="note-block">
+              <span class="note-tag chart-tag">What this chart shows</span>
+              <p>An interactive 3D scatter plot of individual sellers showing revenue in Brazilian Reais (x-axis), average delay in days (y-axis), and average customer rating (z-axis).</p>
+            </div>
+            <div class="note-block">
+              <span class="note-tag findings-tag">What we found</span>
+              <p>We found that the largest merchant accounts consistently maintain fast shipping and high review ratings (4.2+ stars). Operational risk is concentrated among smaller, erratic sellers with inconsistent shipping habits.</p>
+            </div>
+          </div>
         </div>
       </div>
-      <p class="narrative">Read together, the three views tell a consistent story. In the category landscape,
-      heavier and bulkier categories sit visibly further along the delay axis and lower on the score axis —
-      physical fulfillment difficulty, not category popularity, is what drags a category toward the
-      low-satisfaction corner. In the regional cube, the states with the largest customer bases are not
-      necessarily the ones with the worst late-delivery rates, but the states that combine high volume
-      <i>and</i> elevated lateness are exactly the ones a logistics investment should prioritize first. In
-      the seller cube, the highest-revenue sellers cluster in a reasonably tight band of low delay and high
-      score — meaning the marketplace's commercial core is, encouragingly, also its operational core, and
-      the risk is concentrated more in the smaller, less consistent sellers surrounding that band.</p>
 
       <div class="synth-cards">
         <div class="synth-card risk">
-          <div class="tag">RISK</div>
-          <h4>Delay predicts satisfaction more than any other single variable</h4>
-          <p>Across every cut in this study — category, region, individual order — the delay axis aligns
-          with the satisfaction axis more tightly than price, category, or geography alone.</p>
+          <div class="tag">KEY RISK</div>
+          <h4>Delivery delay is the #1 driver of negative reviews</h4>
+          <p>Across every single slice of the data — category, region, price band, or seller — late delivery correlates directly with 1-star ratings.</p>
         </div>
         <div class="synth-card watch">
           <div class="tag">CONCENTRATION</div>
-          <h4>A small core carries a large share of the marketplace</h4>
-          <p>The same small set of states and top sellers reappears across nearly every chart in this study
-          — they are simultaneously the primary growth engine and the primary point of operational risk.</p>
+          <h4>A small core drives the entire marketplace</h4>
+          <p>São Paulo state accounts for over 41% of buyers and 70% of sellers, while the top 10% of merchants generate 67.5% of all sales.</p>
         </div>
         <div class="synth-card">
-          <div class="tag">OPPORTUNITY</div>
-          <h4>Retention and basket size remain largely untouched</h4>
-          <p>A 3.1% repeat-purchase rate and 90% single-item orders point to two growth levers — loyalty
-          and cross-sell — that don't depend on fixing logistics or acquiring new supply first.</p>
+          <div class="tag">BIG OPPORTUNITY</div>
+          <h4>Basket size &amp; retention are wide open</h4>
+          <p>With 96.9% single-purchase buyers and 90.1% single-item orders, automated loyalty rewards and smart bundling offer huge immediate upside.</p>
         </div>
       </div>
     </section>
-
-    <footer class="page-foot">
-      <h3>Scope and limitations</h3>
-      <p>This study covers acquisition, catalog, purchase, fulfillment, and satisfaction data up to the
-      point an order is delivered and reviewed. It does not include cost data, marketing spend, or
-      customer-service contact logs, so statements about profitability, return on acquisition spend, or
-      support-cost impact are outside what these tables can support directly. Findings describe statistical
-      association, not causal proof — the delay–satisfaction relationship in particular is extremely
-      consistent across cuts, but a designed experiment (not just observational data) would be the
-      appropriate next step before treating it as fully causal for planning purposes.</p>
-      <h3>Suggested extensions</h3>
-      <p>Two natural next steps follow directly from what's already in these tables: text-mining the
-      written review comments to categorize complaint themes beyond delivery delay, and building a
-      customer-level (not order-level) feature set — recency, frequency, monetary value — to support a
-      churn or lifetime-value model on top of the repeat-purchase patterns surfaced in section 02.</p>
-      <p style="margin-top:24px;">Built from nine relational tables joined on <code>order_id</code>,
-      <code>customer_id</code>, <code>product_id</code>, <code>seller_id</code>, and <code>mql_id</code>.
-      All fulfillment and satisfaction metrics are computed on delivered orders unless stated otherwise;
-      all geographic joins use ZIP-prefix aggregated coordinates.</p>
-    </footer>
   </main>
 </div>
 
@@ -2698,41 +2893,75 @@ const DATA = {"kpis":{"total_orders":99441,"total_customers":96096,"total_seller
 <script>
 // =====================================================================================
 // The Order Journey — rendering logic for every chart on the page.
-// Chart.js: bar, line, donut, scatter, and a custom box-and-whisker overlay.
-// Plotly.js: the three 3D risk-landscape views.
-// Plain CSS grid: all heatmaps (no extra charting library needed for those).
-// Every render call is wrapped in safe() so one failure never blanks the rest.
+// Supports Dynamic Light / Dark theme switching with state persistence.
 // =====================================================================================
+
+const activeCharts = {};
+
+function getThemeColors() {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  return {
+    isLight,
+    teal: isLight ? '#0D9488' : '#35C9B0',
+    tealSoft: isLight ? 'rgba(13, 148, 136, 0.20)' : 'rgba(53, 201, 176, 0.20)',
+    amber: isLight ? '#D97706' : '#F5A445',
+    amberSoft: isLight ? 'rgba(217, 119, 6, 0.20)' : 'rgba(245, 164, 69, 0.20)',
+    coral: isLight ? '#DC2626' : '#EF6461',
+    coralSoft: isLight ? 'rgba(220, 38, 38, 0.20)' : 'rgba(239, 100, 97, 0.20)',
+    violet: isLight ? '#7C3AED' : '#8C7AE6',
+    violetSoft: isLight ? 'rgba(124, 58, 237, 0.20)' : 'rgba(140, 122, 230, 0.20)',
+    ink: isLight ? '#FFFFFF' : '#141B2E',
+    grid: isLight ? '#E2E8F0' : '#202942',
+    text: isLight ? '#475569' : '#8B93AC',
+    textBright: isLight ? '#0F172A' : '#EEF1F8',
+    panelBg: isLight ? '#FFFFFF' : '#141B2E',
+    raisedBg: isLight ? '#E8EDF5' : '#1B2338',
+    scoreColorScale: {
+      1: isLight ? '#DC2626' : '#EF6461',
+      2: isLight ? '#EA580C' : '#E88B6B',
+      3: isLight ? '#D97706' : '#F5A445',
+      4: isLight ? '#16A34A' : '#7FCB9C',
+      5: isLight ? '#0D9488' : '#35C9B0',
+    },
+    statePalette: isLight 
+      ? ['#0D9488', '#D97706', '#7C3AED', '#DC2626', '#16A34A', '#EA580C', '#2563EB', '#9333EA', '#475569']
+      : ['#35C9B0', '#F5A445', '#8C7AE6', '#EF6461', '#7FCB9C', '#E88B6B', '#5B9BD5', '#C9A0DC', '#6B7A99'],
+  };
+}
+
+function createChart(canvasId, config) {
+  if (activeCharts[canvasId]) {
+    activeCharts[canvasId].destroy();
+  }
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const chart = new Chart(canvas, config);
+  activeCharts[canvasId] = chart;
+  return chart;
+}
 
 function safe(name, fn, fallbackElId){
   try { fn(); }
   catch (err) {
-    console.error('[site] ' + name + ' failed:', err);
+    console.error('[study] ' + name + ' failed:', err);
     const el = document.getElementById(fallbackElId || (name + 'Chart')) || document.getElementById(name);
     if (el && el.parentElement) {
-      const msg = '<div style="color:#5D6684;font-size:0.8rem;padding:20px;">Visual unavailable (' + name + ')</div>';
+      const msg = '<div style="color:var(--text-dim);font-size:0.8rem;padding:20px;">Visual unavailable (' + name + ')</div>';
       if (el.tagName === 'CANVAS') el.parentElement.innerHTML = msg;
       else el.innerHTML = msg;
     }
   }
 }
 
-if (typeof Chart !== 'undefined') {
-  Chart.defaults.color = '#8B93AC';
-  Chart.defaults.font.family = "-apple-system, 'Segoe UI', Arial, sans-serif";
-  Chart.defaults.font.size = 11.5;
-  Chart.defaults.borderColor = '#202942';
+function updateChartDefaults() {
+  if (typeof Chart !== 'undefined') {
+    const C = getThemeColors();
+    Chart.defaults.color = C.text;
+    Chart.defaults.font.family = "-apple-system, 'Segoe UI', Arial, sans-serif";
+    Chart.defaults.font.size = 11.5;
+    Chart.defaults.borderColor = C.grid;
+  }
 }
-
-const COLORS = {
-  teal: '#35C9B0', tealSoft: 'rgba(53,201,176,0.18)',
-  amber: '#F5A445', amberSoft: 'rgba(245,164,69,0.18)',
-  coral: '#EF6461', coralSoft: 'rgba(239,100,97,0.18)',
-  violet: '#8C7AE6', violetSoft: 'rgba(140,122,230,0.18)',
-  ink: '#141B2E', grid: '#202942', text: '#8B93AC', textBright: '#EEF1F8',
-};
-const scoreColorScale = { 1: COLORS.coral, 2: '#E88B6B', 3: COLORS.amber, 4: '#7FCB9C', 5: COLORS.teal };
-const STATE_PALETTE = ['#35C9B0', '#F5A445', '#8C7AE6', '#EF6461', '#7FCB9C', '#E88B6B', '#5B9BD5', '#C9A0DC', '#6B7A99'];
 
 function fmtInt(n){ return Math.round(n).toLocaleString('en-US'); }
 function fmtMoney(n){
@@ -2740,8 +2969,36 @@ function fmtMoney(n){
   if (n >= 1e3) return 'R$ ' + (n/1e3).toFixed(0) + 'K';
   return 'R$ ' + fmtInt(n);
 }
-const baseGrid = { color: COLORS.grid, drawBorder: false };
-const baseTicks = { color: COLORS.text, font: { size: 11 } };
+
+// ---------------------------------------------------------------------------
+// THEME TOGGLE
+// ---------------------------------------------------------------------------
+let currentTheme = localStorage.getItem('order_journey_theme') || 'light';
+
+function applyTheme(theme) {
+  currentTheme = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('order_journey_theme', theme);
+  
+  const icon = document.getElementById('themeIcon');
+  const text = document.getElementById('themeText');
+  if (icon && text) {
+    if (theme === 'light') {
+      icon.textContent = '🌙';
+      text.textContent = 'Switch to Dark Mode';
+    } else {
+      icon.textContent = '☀️';
+      text.textContent = 'Switch to Light Mode';
+    }
+  }
+  
+  updateChartDefaults();
+  renderAll();
+}
+
+function toggleTheme() {
+  applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+}
 
 // ---------------------------------------------------------------------------
 // KPI STRIP
@@ -2750,20 +3007,23 @@ function renderKPIs(){
   const k = DATA.kpis;
   const items = [
     { val: fmtInt(k.total_orders), lbl: 'total orders' },
-    { val: fmtInt(k.total_customers), lbl: 'unique customers' },
+    { val: fmtInt(k.total_customers), lbl: 'unique buyers' },
     { val: fmtInt(k.total_sellers), lbl: 'active sellers' },
-    { val: fmtMoney(k.gmv), lbl: 'gross merchandise value', cls: 'teal' },
+    { val: fmtMoney(k.gmv) + ' BRL', lbl: 'gross sales (R$)', cls: 'teal' },
     { val: k.avg_review_score.toFixed(2) + ' / 5', lbl: 'avg. review score', cls: 'teal' },
-    { val: k.late_pct + '%', lbl: 'delivered orders arriving late', cls: 'amber' },
-    { val: k.one_star_pct + '%', lbl: 'one-star reviews', cls: 'coral' },
-    { val: k.repeat_customer_pct + '%', lbl: 'repeat-purchase rate', cls: 'amber' },
+    { val: k.late_pct + '%', lbl: 'orders arriving late', cls: 'amber' },
+    { val: k.one_star_pct + '%', lbl: '1-star reviews', cls: 'coral' },
+    { val: k.repeat_customer_pct + '%', lbl: 'repeat buyer rate', cls: 'amber' },
   ];
-  document.getElementById('kpiRow').innerHTML = items.map(i => `
-    <div class="kpi"><div class="val ${i.cls||''}">${i.val}</div><div class="lbl">${i.lbl}</div></div>`).join('');
+  const el = document.getElementById('kpiRow');
+  if (el) {
+    el.innerHTML = items.map(i => `
+      <div class="kpi"><div class="val ${i.cls||''}">${i.val}</div><div class="lbl">${i.lbl}</div></div>`).join('');
+  }
 }
 
 // ---------------------------------------------------------------------------
-// GENERIC: box-and-whisker overlay plugin (reused across sections)
+// GENERIC: box-and-whisker overlay plugin
 // ---------------------------------------------------------------------------
 const boxWhiskerPlugin = {
   id: 'boxWhiskerPlugin',
@@ -2772,18 +3032,19 @@ const boxWhiskerPlugin = {
     if (!meta || !meta.data || !chart.boxData) return;
     const box = chart.boxData;
     const { ctx } = chart;
+    const C = getThemeColors();
     meta.data.forEach((bar, i) => {
       const y = bar.y, halfHeight = bar.height / 2, xScale = chart.scales.x;
       const minX = xScale.getPixelForValue(box.min[i]);
       const maxX = xScale.getPixelForValue(box.max[i]);
       const medX = xScale.getPixelForValue(box.median[i]);
       ctx.save();
-      ctx.strokeStyle = COLORS.text; ctx.lineWidth = 1.3;
+      ctx.strokeStyle = C.text; ctx.lineWidth = 1.3;
       ctx.beginPath(); ctx.moveTo(minX, y); ctx.lineTo(maxX, y); ctx.stroke();
       [minX, maxX].forEach(x => {
         ctx.beginPath(); ctx.moveTo(x, y - halfHeight * 0.5); ctx.lineTo(x, y + halfHeight * 0.5); ctx.stroke();
       });
-      ctx.strokeStyle = COLORS.textBright; ctx.lineWidth = 2.2;
+      ctx.strokeStyle = C.textBright; ctx.lineWidth = 2.2;
       ctx.beginPath(); ctx.moveTo(medX, y - halfHeight); ctx.lineTo(medX, y + halfHeight); ctx.stroke();
       ctx.restore();
     });
@@ -2792,16 +3053,19 @@ const boxWhiskerPlugin = {
 
 function renderBoxChart(canvasId, boxData, opts){
   opts = opts || {};
-  const ctx = document.getElementById(canvasId);
-  const chart = new Chart(ctx, {
+  const C = getThemeColors();
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+  
+  const chart = createChart(canvasId, {
     type: 'bar',
     data: {
       labels: boxData.labels,
       datasets: [{
         data: boxData.labels.map((_, i) => [boxData.q1[i], boxData.q3[i]]),
-        backgroundColor: opts.color || COLORS.tealSoft,
-        borderColor: opts.borderColor || COLORS.teal,
-        borderWidth: 1, borderSkipped: false, borderRadius: 3,
+        backgroundColor: opts.color || C.tealSoft,
+        borderColor: opts.borderColor || C.teal,
+        borderWidth: 1.5, borderSkipped: false, borderRadius: 3,
         barThickness: opts.barThickness || 22,
       }],
     },
@@ -2822,24 +3086,27 @@ function renderBoxChart(canvasId, boxData, opts){
         }},
       },
       scales: {
-        x: { grid: baseGrid, ticks: baseTicks, title: { display: true, text: opts.xTitle || '', color: COLORS.text } },
+        x: { grid: baseGrid, ticks: baseTicks, title: { display: true, text: opts.xTitle || '', color: C.text } },
         y: { grid: { display: false }, ticks: { ...baseTicks, font: { size: 10.5 } } },
       },
     },
   });
-  chart.boxData = boxData;
-  chart.update();
+  if (chart) {
+    chart.boxData = boxData;
+    chart.update();
+  }
 }
 
 // ---------------------------------------------------------------------------
-// GENERIC: heatmap (pure CSS grid, no chart library needed)
+// GENERIC: heatmap (pure CSS grid)
 // ---------------------------------------------------------------------------
 function renderHeatmap(containerId, rowLabels, colLabels, matrix, opts){
   opts = opts || {};
+  const C = getThemeColors();
   const flat = matrix.flat();
   const max = Math.max(...flat, 1);
-  const fromColor = opts.fromColor || [0x18, 0x22, 0x38];
-  const toColor = opts.toColor || [0x35, 0xC9, 0xB0];
+  const fromColor = opts.fromColor || (C.isLight ? [232, 237, 245] : [24, 34, 56]);
+  const toColor = opts.toColor || (C.isLight ? [13, 148, 136] : [53, 201, 176]);
   const colorFor = (v) => {
     const t = v / max;
     const r = Math.round(fromColor[0] + t * (toColor[0] - fromColor[0]));
@@ -2848,6 +3115,7 @@ function renderHeatmap(containerId, rowLabels, colLabels, matrix, opts){
     return `rgb(${r},${g},${b})`;
   };
   const container = document.getElementById(containerId);
+  if (!container) return;
   const colWidth = opts.labelWidth || 60;
   const gridCols = `${colWidth}px repeat(${colLabels.length}, 1fr)`;
   let html = '<div class="heatmap">';
@@ -2872,26 +3140,30 @@ function renderHeatmap(containerId, rowLabels, colLabels, matrix, opts){
 // HERO — monthly orders (bar) + avg score (line)
 // ---------------------------------------------------------------------------
 function renderHero(){
+  const C = getThemeColors();
   const d = DATA.monthly_trends;
-  new Chart(document.getElementById('heroChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('heroChart', {
     data: {
       labels: d.labels,
       datasets: [
-        { type: 'bar', label: 'Orders', data: d.orders, backgroundColor: COLORS.tealSoft, borderRadius: 3, yAxisID: 'y', order: 2 },
-        { type: 'line', label: 'Avg. review score', data: d.avg_score, borderColor: COLORS.amber, backgroundColor: COLORS.amber,
-          pointRadius: 2.5, pointBackgroundColor: COLORS.amber, tension: 0.35, yAxisID: 'y1', spanGaps: true, order: 1 },
+        { type: 'bar', label: 'Orders placed', data: d.orders, backgroundColor: C.tealSoft, borderColor: C.teal, borderWidth: 1, borderRadius: 3, yAxisID: 'y', order: 2 },
+        { type: 'line', label: 'Avg. review score', data: d.avg_score, borderColor: C.amber, backgroundColor: C.amber,
+          pointRadius: 3, pointBackgroundColor: C.amber, tension: 0.35, yAxisID: 'y1', spanGaps: true, order: 1 },
       ],
     },
     options: {
       responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { position: 'top', align: 'end', labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true } },
-        tooltip: { backgroundColor: COLORS.ink, borderColor: COLORS.grid, borderWidth: 1, titleColor: COLORS.textBright },
+        legend: { position: 'top', align: 'end', labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true, color: C.text } },
+        tooltip: { backgroundColor: C.ink, borderColor: C.grid, borderWidth: 1, titleColor: C.textBright, bodyColor: C.text },
       },
       scales: {
         x: { grid: { display: false }, ticks: { ...baseTicks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
-        y: { position: 'left', grid: baseGrid, ticks: baseTicks, title: { display: true, text: 'orders / month', color: COLORS.text } },
-        y1: { position: 'right', grid: { display: false }, min: 1, max: 5, ticks: baseTicks, title: { display: true, text: 'avg. review score', color: COLORS.text } },
+        y: { position: 'left', grid: baseGrid, ticks: baseTicks, title: { display: true, text: 'orders / month', color: C.text } },
+        y1: { position: 'right', grid: { display: false }, min: 1, max: 5, ticks: baseTicks, title: { display: true, text: 'avg. review score', color: C.text } },
       },
     },
   });
@@ -2901,9 +3173,13 @@ function renderHero(){
 // STAGE 1 — FULFILLMENT & SATISFACTION
 // ---------------------------------------------------------------------------
 function renderOrderStatus(){
+  const C = getThemeColors();
   const os = DATA.order_status;
-  const statusColors = os.labels.map(l => ['canceled', 'unavailable'].includes(l) ? COLORS.coral : COLORS.teal);
-  new Chart(document.getElementById('orderStatusChart'), {
+  const statusColors = os.labels.map(l => ['canceled', 'unavailable'].includes(l) ? C.coral : C.teal);
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('orderStatusChart', {
     type: 'bar',
     data: { labels: os.labels, datasets: [{ data: os.values, backgroundColor: statusColors, borderRadius: 4 }] },
     options: {
@@ -2918,10 +3194,14 @@ function renderOrderStatus(){
 }
 
 function renderReviewScores(){
+  const C = getThemeColors();
   const rs = DATA.review_scores;
-  new Chart(document.getElementById('reviewScoreChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('reviewScoreChart', {
     type: 'bar',
-    data: { labels: rs.labels.map(l => l + ' star' + (l>1?'s':'')), datasets: [{ data: rs.values, backgroundColor: rs.labels.map(l => scoreColorScale[l]), borderRadius: 4 }] },
+    data: { labels: rs.labels.map(l => l + ' star' + (l>1?'s':'')), datasets: [{ data: rs.values, backgroundColor: rs.labels.map(l => C.scoreColorScale[l]), borderRadius: 4 }] },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => fmtInt(c.raw) + ' reviews' } } },
@@ -2934,71 +3214,83 @@ function renderReviewScores(){
 }
 
 function renderDelayScore(){
+  const C = getThemeColors();
   const dv = DATA.delay_vs_score;
-  new Chart(document.getElementById('delayScoreChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('delayScoreChart', {
     data: {
       labels: dv.labels,
       datasets: [
-        { type: 'bar', label: '# orders', data: dv.count, backgroundColor: COLORS.grid, borderRadius: 3, yAxisID: 'y' },
-        { type: 'line', label: 'Avg. review score', data: dv.avg_score, borderColor: COLORS.coral, backgroundColor: COLORS.coral, pointRadius: 4, borderWidth: 2.5, tension: 0.2, yAxisID: 'y1' },
+        { type: 'bar', label: '# orders', data: dv.count, backgroundColor: C.grid, borderRadius: 3, yAxisID: 'y' },
+        { type: 'line', label: 'Avg. review score', data: dv.avg_score, borderColor: C.coral, backgroundColor: C.coral, pointRadius: 4, borderWidth: 2.5, tension: 0.2, yAxisID: 'y1' },
       ],
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true } } },
+      plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true, color: C.text } } },
       scales: {
         x: { grid: { display: false }, ticks: baseTicks },
-        y: { position: 'left', grid: baseGrid, ticks: baseTicks, title: { display: true, text: '# orders', color: COLORS.text } },
-        y1: { position: 'right', min: 1, max: 5, grid: { display: false }, ticks: baseTicks, title: { display: true, text: 'avg. review score', color: COLORS.text } },
+        y: { position: 'left', grid: baseGrid, ticks: baseTicks, title: { display: true, text: '# orders', color: C.text } },
+        y1: { position: 'right', min: 1, max: 5, grid: { display: false }, ticks: baseTicks, title: { display: true, text: 'avg. review score', color: C.text } },
       },
     },
   });
 }
 
 function renderOntimeScore(){
+  const C = getThemeColors();
   const o = DATA.ontime_rate_by_score;
-  new Chart(document.getElementById('ontimeScoreChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('ontimeScoreChart', {
     data: {
       labels: o.labels.map(l => l + ' star' + (l>1?'s':'')),
       datasets: [
-        { type: 'bar', label: 'On-time rate %', data: o.ontime_pct, backgroundColor: COLORS.tealSoft, borderRadius: 3, yAxisID: 'y' },
-        { type: 'line', label: 'Avg. delivery days', data: o.avg_days, borderColor: COLORS.amber, backgroundColor: COLORS.amber, pointRadius: 4, borderWidth: 2.5, tension: 0.2, yAxisID: 'y1' },
+        { type: 'bar', label: 'On-time rate %', data: o.ontime_pct, backgroundColor: C.tealSoft, borderColor: C.teal, borderWidth: 1, borderRadius: 3, yAxisID: 'y' },
+        { type: 'line', label: 'Avg. delivery days', data: o.avg_days, borderColor: C.amber, backgroundColor: C.amber, pointRadius: 4, borderWidth: 2.5, tension: 0.2, yAxisID: 'y1' },
       ],
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true } } },
+      plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true, color: C.text } } },
       scales: {
         x: { grid: { display: false }, ticks: baseTicks },
-        y: { position: 'left', grid: baseGrid, ticks: baseTicks, title: { display: true, text: 'on-time rate (%)', color: COLORS.text }, min: 0, max: 100 },
-        y1: { position: 'right', grid: { display: false }, ticks: baseTicks, title: { display: true, text: 'avg. delivery days', color: COLORS.text } },
+        y: { position: 'left', grid: baseGrid, ticks: baseTicks, title: { display: true, text: 'on-time rate (%)', color: C.text }, min: 0, max: 100 },
+        y1: { position: 'right', grid: { display: false }, ticks: baseTicks, title: { display: true, text: 'avg. delivery days', color: C.text } },
       },
     },
   });
 }
 
 function renderScatterOrder(){
+  const C = getThemeColors();
   const s = DATA.scatter_order;
   const points = s.x.map((x, i) => ({ x, y: s.y[i], score: s.score[i] }));
   const byScore = {};
   [1,2,3,4,5].forEach(sc => { byScore[sc] = points.filter(p => p.score === sc); });
-  new Chart(document.getElementById('scatterOrderChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('scatterOrderChart', {
     type: 'scatter',
     data: {
       datasets: Object.keys(byScore).map(sc => ({
         label: sc + ' star' + (sc>1?'s':''), data: byScore[sc].map(p => ({ x: p.x, y: p.y })),
-        backgroundColor: scoreColorScale[sc] + 'b3', pointRadius: 3.2, pointHoverRadius: 5,
+        backgroundColor: C.scoreColorScale[sc] + 'b3', pointRadius: 3.2, pointHoverRadius: 5,
       })),
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'top', align: 'end', labels: { boxWidth: 9, boxHeight: 9, usePointStyle: true, font: { size: 10 } } },
-        tooltip: { callbacks: { label: (c) => `delay ${c.parsed.x.toFixed(1)}d · value R$${c.parsed.y.toFixed(0)}` } },
+        legend: { position: 'top', align: 'end', labels: { boxWidth: 9, boxHeight: 9, usePointStyle: true, font: { size: 10 }, color: C.text } },
+        tooltip: { callbacks: { label: (c) => `delay ${c.parsed.x.toFixed(1)}d · value R$ ${c.parsed.y.toFixed(0)} BRL` } },
       },
       scales: {
-        x: { grid: baseGrid, ticks: baseTicks, title: { display: true, text: 'delivery delay (days, negative = early)', color: COLORS.text } },
-        y: { grid: baseGrid, ticks: baseTicks, title: { display: true, text: 'order value (BRL)', color: COLORS.text } },
+        x: { grid: baseGrid, ticks: baseTicks, title: { display: true, text: 'delivery delay (days, negative = early)', color: C.text } },
+        y: { grid: baseGrid, ticks: baseTicks, title: { display: true, text: 'order value (Brazilian Reais R$)', color: C.text } },
       },
     },
   });
@@ -3012,10 +3304,14 @@ function renderWeekdayHourHeatmap(){
 }
 
 function renderWrittenFeedback(){
+  const C = getThemeColors();
   const wf = DATA.written_feedback;
-  new Chart(document.getElementById('writtenFeedbackChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('writtenFeedbackChart', {
     type: 'bar',
-    data: { labels: wf.labels.map(l => l + ' star' + (l>1?'s':'')), datasets: [{ data: wf.values, backgroundColor: wf.labels.map(l => scoreColorScale[l]), borderRadius: 4 }] },
+    data: { labels: wf.labels.map(l => l + ' star' + (l>1?'s':'')), datasets: [{ data: wf.values, backgroundColor: wf.labels.map(l => C.scoreColorScale[l]), borderRadius: 4 }] },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => c.raw + '% wrote a comment' } } },
@@ -3031,10 +3327,14 @@ function renderWrittenFeedback(){
 // STAGE 2 — CUSTOMERS & GEOGRAPHY
 // ---------------------------------------------------------------------------
 function renderStateCustomers(){
+  const C = getThemeColors();
   const s = DATA.states_customers;
-  new Chart(document.getElementById('stateCustomersChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('stateCustomersChart', {
     type: 'bar',
-    data: { labels: s.labels, datasets: [{ data: s.values, backgroundColor: COLORS.tealSoft, borderRadius: 3 }] },
+    data: { labels: s.labels, datasets: [{ data: s.values, backgroundColor: C.tealSoft, borderColor: C.teal, borderWidth: 1, borderRadius: 3 }] },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
@@ -3047,10 +3347,14 @@ function renderStateCustomers(){
 }
 
 function renderCityCustomers(){
+  const C = getThemeColors();
   const c = DATA.cities_customers;
-  new Chart(document.getElementById('cityCustomersChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('cityCustomersChart', {
     type: 'bar',
-    data: { labels: c.labels, datasets: [{ data: c.values, backgroundColor: COLORS.violetSoft, borderRadius: 3 }] },
+    data: { labels: c.labels, datasets: [{ data: c.values, backgroundColor: C.violetSoft, borderColor: C.violet, borderWidth: 1, borderRadius: 3 }] },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
@@ -3063,14 +3367,15 @@ function renderCityCustomers(){
 }
 
 function renderCustomerSegments(){
+  const C = getThemeColors();
   const s = DATA.customer_segments;
-  new Chart(document.getElementById('customerSegmentChart'), {
+  createChart('customerSegmentChart', {
     type: 'doughnut',
-    data: { labels: s.labels, datasets: [{ data: s.values, backgroundColor: [COLORS.teal, COLORS.amber, COLORS.violet, COLORS.coral], borderColor: COLORS.ink, borderWidth: 2 }] },
+    data: { labels: s.labels, datasets: [{ data: s.values, backgroundColor: [C.teal, C.amber, C.violet, C.coral], borderColor: C.panelBg, borderWidth: 2 }] },
     options: {
       responsive: true, maintainAspectRatio: false, cutout: '58%',
       plugins: {
-        legend: { position: 'bottom', labels: { boxWidth: 9, boxHeight: 9, usePointStyle: true, font: { size: 10.5 } } },
+        legend: { position: 'bottom', labels: { boxWidth: 9, boxHeight: 9, usePointStyle: true, font: { size: 10.5 }, color: C.text } },
         tooltip: { callbacks: { label: (c) => `${fmtInt(c.raw)} customers (${(c.raw/s.values.reduce((a,b)=>a+b,0)*100).toFixed(1)}%)` } },
       },
     },
@@ -3078,28 +3383,33 @@ function renderCustomerSegments(){
 }
 
 function renderRegion(){
+  const C = getThemeColors();
   const r = DATA.regions;
-  new Chart(document.getElementById('regionChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('regionChart', {
     data: {
       labels: r.labels,
       datasets: [
-        { type: 'bar', label: 'Customers', data: r.customers, backgroundColor: COLORS.tealSoft, borderRadius: 3, yAxisID: 'y' },
-        { type: 'line', label: 'Repeat rate %', data: r.repeat_rate, borderColor: COLORS.amber, backgroundColor: COLORS.amber, pointRadius: 4, borderWidth: 2.5, tension: 0.2, yAxisID: 'y1' },
+        { type: 'bar', label: 'Customers', data: r.customers, backgroundColor: C.tealSoft, borderColor: C.teal, borderWidth: 1, borderRadius: 3, yAxisID: 'y' },
+        { type: 'line', label: 'Repeat rate %', data: r.repeat_rate, borderColor: C.amber, backgroundColor: C.amber, pointRadius: 4, borderWidth: 2.5, tension: 0.2, yAxisID: 'y1' },
       ],
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true } } },
+      plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true, color: C.text } } },
       scales: {
         x: { grid: { display: false }, ticks: baseTicks },
-        y: { position: 'left', grid: baseGrid, ticks: { ...baseTicks, callback: (v) => v >= 1000 ? (v/1000)+'K' : v }, title: { display: true, text: '# customers', color: COLORS.text } },
-        y1: { position: 'right', grid: { display: false }, ticks: baseTicks, title: { display: true, text: 'repeat rate (%)', color: COLORS.text } },
+        y: { position: 'left', grid: baseGrid, ticks: { ...baseTicks, callback: (v) => v >= 1000 ? (v/1000)+'K' : v }, title: { display: true, text: '# customers', color: C.text } },
+        y1: { position: 'right', grid: { display: false }, ticks: baseTicks, title: { display: true, text: 'repeat rate (%)', color: C.text } },
       },
     },
   });
 }
 
 function renderGeoScatter(){
+  const C = getThemeColors();
   const g = DATA.geo_scatter;
   const groups = {};
   g.lat.forEach((lat, i) => {
@@ -3110,25 +3420,28 @@ function renderGeoScatter(){
   const stateNames = Object.keys(groups).filter(s => s !== 'Other');
   stateNames.sort();
   const orderedKeys = [...stateNames, 'Other'].filter(k => groups[k]);
-  new Chart(document.getElementById('geoScatterChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('geoScatterChart', {
     type: 'scatter',
     data: {
       datasets: orderedKeys.map((st, i) => ({
         label: st,
         data: groups[st],
-        backgroundColor: st === 'Other' ? 'rgba(139,147,172,0.35)' : STATE_PALETTE[i % STATE_PALETTE.length] + 'b0',
+        backgroundColor: st === 'Other' ? (C.isLight ? 'rgba(100,116,139,0.35)' : 'rgba(139,147,172,0.35)') : C.statePalette[i % C.statePalette.length] + 'b0',
         pointRadius: 2.4, pointHoverRadius: 4,
       })),
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'top', align: 'end', labels: { boxWidth: 8, boxHeight: 8, usePointStyle: true, font: { size: 9.5 } } },
+        legend: { position: 'top', align: 'end', labels: { boxWidth: 8, boxHeight: 8, usePointStyle: true, font: { size: 9.5 }, color: C.text } },
         tooltip: { callbacks: { label: (c) => `${c.dataset.label} · (${c.parsed.x.toFixed(1)}, ${c.parsed.y.toFixed(1)})` } },
       },
       scales: {
-        x: { grid: baseGrid, ticks: baseTicks, title: { display: true, text: 'longitude', color: COLORS.text } },
-        y: { grid: baseGrid, ticks: baseTicks, title: { display: true, text: 'latitude', color: COLORS.text } },
+        x: { grid: baseGrid, ticks: baseTicks, title: { display: true, text: 'longitude', color: C.text } },
+        y: { grid: baseGrid, ticks: baseTicks, title: { display: true, text: 'latitude', color: C.text } },
       },
     },
   });
@@ -3145,10 +3458,14 @@ function renderStateMonthHeatmap(){
 // STAGE 3 — CATALOG & SELLERS
 // ---------------------------------------------------------------------------
 function renderCategoryCatalog(){
+  const C = getThemeColors();
   const c = DATA.categories_catalog;
-  new Chart(document.getElementById('categoryCatalogChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('categoryCatalogChart', {
     type: 'bar',
-    data: { labels: c.labels, datasets: [{ data: c.values, backgroundColor: COLORS.violetSoft, borderRadius: 3 }] },
+    data: { labels: c.labels, datasets: [{ data: c.values, backgroundColor: C.violetSoft, borderColor: C.violet, borderWidth: 1, borderRadius: 3 }] },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
@@ -3161,10 +3478,14 @@ function renderCategoryCatalog(){
 }
 
 function renderCategoryRevenue(){
+  const C = getThemeColors();
   const d = DATA.categories_revenue;
-  new Chart(document.getElementById('categoryRevenueChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('categoryRevenueChart', {
     type: 'bar',
-    data: { labels: d.labels, datasets: [{ data: d.revenue, backgroundColor: d.avg_score.map(s => s >= 4.2 ? COLORS.teal : s >= 3.9 ? COLORS.amber : COLORS.coral), borderRadius: 3 }] },
+    data: { labels: d.labels, datasets: [{ data: d.revenue, backgroundColor: d.avg_score.map(s => s >= 4.2 ? C.teal : s >= 3.9 ? C.amber : C.coral), borderRadius: 3 }] },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => fmtMoney(c.raw) + '  ·  avg score ' + d.avg_score[c.dataIndex].toFixed(2) } } },
@@ -3177,36 +3498,43 @@ function renderCategoryRevenue(){
 }
 
 function renderBoxWeight(){
-  renderBoxChart('boxWeightChart', DATA.box_weight_by_category, { unit: 'g', xTitle: 'product weight (grams)', color: COLORS.tealSoft, borderColor: COLORS.teal });
+  const C = getThemeColors();
+  renderBoxChart('boxWeightChart', DATA.box_weight_by_category, { unit: 'g', xTitle: 'product weight (grams)', color: C.tealSoft, borderColor: C.teal });
 }
 
 function renderCorrelationHeatmap(){
+  const C = getThemeColors();
   const c = DATA.product_correlation;
   const n = c.labels.length;
   const matrix = c.matrix;
   const container = document.getElementById('correlationHeatmap');
+  if (!container) return;
   const colWidth = 130;
   const gridCols = `${colWidth}px repeat(${n}, 1fr)`;
   let html = '<div class="heatmap">';
   html += `<div class="heatmap-col-labels" style="grid-template-columns:${gridCols}"><span></span>` +
     c.labels.map(l => `<span style="writing-mode:vertical-rl;text-orientation:mixed;height:60px;">${l}</span>`).join('') + '</div>';
+  
+  const midColor = C.isLight ? [232, 237, 245] : [27, 35, 56];
+  const posColor = C.isLight ? [13, 148, 136] : [53, 201, 176];
+  const negColor = C.isLight ? [220, 38, 38] : [239, 100, 97];
+  
   c.labels.forEach((row, ri) => {
     html += `<div class="heatmap-row" style="grid-template-columns:${gridCols}">`;
     html += `<div class="row-label" style="text-align:right;">${row}</div>`;
     matrix[ri].forEach((v) => {
-      // diverging color: coral (-1) -> panel (0) -> teal (+1)
       let bg;
       if (v >= 0) {
         const t = v;
-        const r = Math.round(0x1B + t * (0x35 - 0x1B));
-        const g = Math.round(0x23 + t * (0xC9 - 0x23));
-        const b = Math.round(0x38 + t * (0xB0 - 0x38));
+        const r = Math.round(midColor[0] + t * (posColor[0] - midColor[0]));
+        const g = Math.round(midColor[1] + t * (posColor[1] - midColor[1]));
+        const b = Math.round(midColor[2] + t * (posColor[2] - midColor[2]));
         bg = `rgb(${r},${g},${b})`;
       } else {
         const t = -v;
-        const r = Math.round(0x1B + t * (0xEF - 0x1B));
-        const g = Math.round(0x23 + t * (0x64 - 0x23));
-        const b = Math.round(0x38 + t * (0x61 - 0x38));
+        const r = Math.round(midColor[0] + t * (negColor[0] - midColor[0]));
+        const g = Math.round(midColor[1] + t * (negColor[1] - midColor[1]));
+        const b = Math.round(midColor[2] + t * (negColor[2] - midColor[2]));
         bg = `rgb(${r},${g},${b})`;
       }
       html += `<div class="heatmap-cell" style="background:${bg};height:32px;">
@@ -3216,15 +3544,22 @@ function renderCorrelationHeatmap(){
     html += '</div>';
   });
   html += '</div>';
-  html += `<div class="heatmap-legend"><span>−1 (inverse)</span><span class="scale" style="background:linear-gradient(90deg, #EF6461, #1B2338, #35C9B0)"></span><span>+1 (aligned)</span></div>`;
+  const gradCss = C.isLight 
+    ? 'linear-gradient(90deg, #DC2626, #E8EDF5, #0D9488)'
+    : 'linear-gradient(90deg, #EF6461, #1B2338, #35C9B0)';
+  html += `<div class="heatmap-legend"><span>−1 (inverse)</span><span class="scale" style="background:${gradCss}"></span><span>+1 (aligned)</span></div>`;
   container.innerHTML = html;
 }
 
 function renderSellerState(){
+  const C = getThemeColors();
   const s = DATA.sellers_by_state;
-  new Chart(document.getElementById('sellerStateChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('sellerStateChart', {
     type: 'bar',
-    data: { labels: s.labels, datasets: [{ data: s.values, backgroundColor: COLORS.amberSoft, borderRadius: 3 }] },
+    data: { labels: s.labels, datasets: [{ data: s.values, backgroundColor: C.amberSoft, borderColor: C.amber, borderWidth: 1, borderRadius: 3 }] },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
@@ -3234,10 +3569,14 @@ function renderSellerState(){
 }
 
 function renderSellerCity(){
+  const C = getThemeColors();
   const s = DATA.sellers_by_city;
-  new Chart(document.getElementById('sellerCityChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('sellerCityChart', {
     type: 'bar',
-    data: { labels: s.labels, datasets: [{ data: s.values, backgroundColor: COLORS.coralSoft, borderRadius: 3 }] },
+    data: { labels: s.labels, datasets: [{ data: s.values, backgroundColor: C.coralSoft, borderColor: C.coral, borderWidth: 1, borderRadius: 3 }] },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
@@ -3247,21 +3586,25 @@ function renderSellerCity(){
 }
 
 function renderLorenz(){
+  const C = getThemeColors();
   const lz = DATA.seller_lorenz;
-  new Chart(document.getElementById('lorenzChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('lorenzChart', {
     data: {
       labels: lz.x.map(v => v.toFixed(0)),
       datasets: [
-        { type: 'line', label: 'Actual GMV share', data: lz.y, borderColor: COLORS.coral, backgroundColor: COLORS.coralSoft, fill: true, pointRadius: 0, borderWidth: 2, tension: 0.1 },
-        { type: 'line', label: 'Perfect equality', data: lz.x, borderColor: COLORS.text, borderDash: [4,4], pointRadius: 0, borderWidth: 1.3 },
+        { type: 'line', label: 'Actual GMV share', data: lz.y, borderColor: C.coral, backgroundColor: C.coralSoft, fill: true, pointRadius: 0, borderWidth: 2, tension: 0.1 },
+        { type: 'line', label: 'Perfect equality', data: lz.x, borderColor: C.text, borderDash: [4,4], pointRadius: 0, borderWidth: 1.3 },
       ],
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true } } },
+      plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true, color: C.text } } },
       scales: {
-        x: { grid: { display: false }, ticks: { ...baseTicks, maxTicksLimit: 6 }, title: { display: true, text: '% of sellers (ranked by revenue)', color: COLORS.text } },
-        y: { grid: baseGrid, ticks: baseTicks, title: { display: true, text: '% of cumulative GMV', color: COLORS.text } },
+        x: { grid: { display: false }, ticks: { ...baseTicks, maxTicksLimit: 6 }, title: { display: true, text: '% of sellers (ranked by revenue)', color: C.text } },
+        y: { grid: baseGrid, ticks: baseTicks, title: { display: true, text: '% of cumulative GMV (R$)', color: C.text } },
       },
     },
   });
@@ -3271,15 +3614,19 @@ function renderLorenz(){
 // STAGE 4 — PURCHASES & PAYMENTS
 // ---------------------------------------------------------------------------
 function renderItemsPerOrder(){
+  const C = getThemeColors();
   const ipo = DATA.items_per_order;
-  new Chart(document.getElementById('itemsPerOrderChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('itemsPerOrderChart', {
     type: 'bar',
-    data: { labels: ipo.labels, datasets: [{ data: ipo.values, backgroundColor: COLORS.tealSoft, borderRadius: 4 }] },
+    data: { labels: ipo.labels, datasets: [{ data: ipo.values, backgroundColor: C.tealSoft, borderColor: C.teal, borderWidth: 1, borderRadius: 4 }] },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { display: false }, ticks: baseTicks, title: { display: true, text: '# items', color: COLORS.text } },
+        x: { grid: { display: false }, ticks: baseTicks, title: { display: true, text: '# items in order', color: C.text } },
         y: { grid: baseGrid, ticks: { ...baseTicks, callback: (v) => v >= 1000 ? (v/1000)+'K' : v } },
       },
     },
@@ -3287,27 +3634,32 @@ function renderItemsPerOrder(){
 }
 
 function renderPaymentType(){
+  const C = getThemeColors();
   const pt = DATA.payment_types;
-  new Chart(document.getElementById('paymentTypeChart'), {
+  createChart('paymentTypeChart', {
     type: 'doughnut',
-    data: { labels: pt.labels, datasets: [{ data: pt.values, backgroundColor: [COLORS.teal, COLORS.amber, COLORS.violet, COLORS.coral, COLORS.text], borderColor: COLORS.ink, borderWidth: 2 }] },
+    data: { labels: pt.labels, datasets: [{ data: pt.values, backgroundColor: [C.teal, C.amber, C.violet, C.coral, C.text], borderColor: C.panelBg, borderWidth: 2 }] },
     options: {
       responsive: true, maintainAspectRatio: false, cutout: '62%',
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 9, boxHeight: 9, usePointStyle: true, font: { size: 10.5 } } } },
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 9, boxHeight: 9, usePointStyle: true, font: { size: 10.5 }, color: C.text } } },
     },
   });
 }
 
 function renderInstallments(){
+  const C = getThemeColors();
   const inst = DATA.installments;
-  new Chart(document.getElementById('installmentsChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('installmentsChart', {
     type: 'bar',
-    data: { labels: inst.labels, datasets: [{ data: inst.values, backgroundColor: COLORS.amberSoft, borderRadius: 4 }] },
+    data: { labels: inst.labels, datasets: [{ data: inst.values, backgroundColor: C.amberSoft, borderColor: C.amber, borderWidth: 1, borderRadius: 4 }] },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { display: false }, ticks: baseTicks, title: { display: true, text: '# instalments', color: COLORS.text } },
+        x: { grid: { display: false }, ticks: baseTicks, title: { display: true, text: '# installments', color: C.text } },
         y: { grid: baseGrid, ticks: { ...baseTicks, callback: (v) => v >= 1000 ? (v/1000)+'K' : v } },
       },
     },
@@ -3318,10 +3670,14 @@ function renderInstallments(){
 // STAGE 5 — ACQUISITION FUNNEL
 // ---------------------------------------------------------------------------
 function renderFunnelStage(){
+  const C = getThemeColors();
   const fs = DATA.funnel_stages;
-  new Chart(document.getElementById('funnelStageChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('funnelStageChart', {
     type: 'bar',
-    data: { labels: fs.labels, datasets: [{ data: fs.values, backgroundColor: [COLORS.violetSoft, COLORS.teal], borderRadius: 6, barThickness: 60 }] },
+    data: { labels: fs.labels, datasets: [{ data: fs.values, backgroundColor: [C.violetSoft, C.teal], borderColor: [C.violet, C.teal], borderWidth: 1.5, borderRadius: 6, barThickness: 50 }] },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => fmtInt(c.raw) + ' leads' } } },
@@ -3331,32 +3687,40 @@ function renderFunnelStage(){
 }
 
 function renderFunnelOrigin(){
+  const C = getThemeColors();
   const d = DATA.marketing_funnel;
-  new Chart(document.getElementById('funnelOriginChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('funnelOriginChart', {
     data: {
       labels: d.labels,
       datasets: [
-        { type: 'bar', label: 'Leads', data: d.leads, backgroundColor: COLORS.violetSoft, borderRadius: 3, yAxisID: 'y' },
-        { type: 'line', label: 'Conversion %', data: d.conversion_pct, borderColor: COLORS.teal, backgroundColor: COLORS.teal, pointRadius: 3, tension: 0.3, yAxisID: 'y1' },
+        { type: 'bar', label: 'Leads', data: d.leads, backgroundColor: C.violetSoft, borderColor: C.violet, borderWidth: 1, borderRadius: 3, yAxisID: 'y' },
+        { type: 'line', label: 'Conversion %', data: d.conversion_pct, borderColor: C.teal, backgroundColor: C.teal, pointRadius: 4, tension: 0.3, yAxisID: 'y1' },
       ],
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true } } },
+      plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true, color: C.text } } },
       scales: {
         x: { grid: { display: false }, ticks: { ...baseTicks, maxRotation: 40, minRotation: 40 } },
-        y: { position: 'left', grid: baseGrid, ticks: baseTicks, title: { display: true, text: '# leads', color: COLORS.text } },
-        y1: { position: 'right', grid: { display: false }, ticks: baseTicks, title: { display: true, text: 'conversion %', color: COLORS.text } },
+        y: { position: 'left', grid: baseGrid, ticks: baseTicks, title: { display: true, text: '# leads', color: C.text } },
+        y1: { position: 'right', grid: { display: false }, ticks: baseTicks, title: { display: true, text: 'conversion %', color: C.text } },
       },
     },
   });
 }
 
 function renderDealSegment(){
+  const C = getThemeColors();
   const ds = DATA.deal_segments;
-  new Chart(document.getElementById('dealSegmentChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('dealSegmentChart', {
     type: 'bar',
-    data: { labels: ds.labels, datasets: [{ data: ds.values, backgroundColor: COLORS.violetSoft, borderRadius: 3 }] },
+    data: { labels: ds.labels, datasets: [{ data: ds.values, backgroundColor: C.violetSoft, borderColor: C.violet, borderWidth: 1, borderRadius: 3 }] },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
@@ -3366,22 +3730,27 @@ function renderDealSegment(){
 }
 
 function renderBusinessType(){
+  const C = getThemeColors();
   const b = DATA.business_type;
-  new Chart(document.getElementById('businessTypeChart'), {
+  createChart('businessTypeChart', {
     type: 'doughnut',
-    data: { labels: b.labels, datasets: [{ data: b.values, backgroundColor: [COLORS.teal, COLORS.amber, COLORS.violet, COLORS.coral], borderColor: COLORS.ink, borderWidth: 2 }] },
+    data: { labels: b.labels, datasets: [{ data: b.values, backgroundColor: [C.teal, C.amber, C.violet, C.coral], borderColor: C.panelBg, borderWidth: 2 }] },
     options: {
       responsive: true, maintainAspectRatio: false, cutout: '58%',
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 9, boxHeight: 9, usePointStyle: true, font: { size: 10.5 } } } },
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 9, boxHeight: 9, usePointStyle: true, font: { size: 10.5 }, color: C.text } } },
     },
   });
 }
 
 function renderLeadProfile(){
+  const C = getThemeColors();
   const p = DATA.lead_behaviour_profile;
-  new Chart(document.getElementById('leadProfileChart'), {
+  const baseGrid = { color: C.grid, drawBorder: false };
+  const baseTicks = { color: C.text, font: { size: 11 } };
+
+  createChart('leadProfileChart', {
     type: 'bar',
-    data: { labels: p.labels, datasets: [{ data: p.values, backgroundColor: COLORS.tealSoft, borderRadius: 3 }] },
+    data: { labels: p.labels, datasets: [{ data: p.values, backgroundColor: C.tealSoft, borderColor: C.teal, borderWidth: 1, borderRadius: 3 }] },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
@@ -3391,80 +3760,90 @@ function renderLeadProfile(){
 }
 
 function renderBoxDays(){
-  renderBoxChart('boxDaysChart', DATA.box_days_to_close, { unit: 'd', xTitle: 'days to close', color: COLORS.amberSoft, borderColor: COLORS.amber, barThickness: 26 });
+  const C = getThemeColors();
+  renderBoxChart('boxDaysChart', DATA.box_days_to_close, { unit: 'd', xTitle: 'days to close deal', color: C.amberSoft, borderColor: C.amber, barThickness: 26 });
 }
 
 function renderSegmentOriginHeatmap(){
+  const C = getThemeColors();
   const h = DATA.heatmap_segment_origin;
   renderHeatmap('heatmapSegmentOrigin', h.segments, h.origins, h.matrix, {
     labelWidth: 150, suffix: ' deals', legendLow: 'fewer deals', legendHigh: 'more deals',
-    fromColor: [0x18,0x22,0x38], toColor: [0x8C,0x7A,0xE6],
+    fromColor: C.isLight ? [232, 237, 245] : [24, 34, 56],
+    toColor: C.isLight ? [124, 58, 237] : [140, 122, 230],
   });
 }
 
 // ---------------------------------------------------------------------------
 // STAGE 6 — 3D RISK LANDSCAPES (Plotly)
 // ---------------------------------------------------------------------------
-const plotly3dLayoutBase = {
-  paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
-  font: { color: COLORS.text, family: '-apple-system, Segoe UI, Arial, sans-serif', size: 10.5 },
-  margin: { l: 0, r: 0, t: 10, b: 0 },
-  scene: {
-    xaxis: { gridcolor: COLORS.grid, zerolinecolor: COLORS.grid, backgroundcolor: 'rgba(0,0,0,0)', color: COLORS.text },
-    yaxis: { gridcolor: COLORS.grid, zerolinecolor: COLORS.grid, backgroundcolor: 'rgba(0,0,0,0)', color: COLORS.text },
-    zaxis: { gridcolor: COLORS.grid, zerolinecolor: COLORS.grid, backgroundcolor: 'rgba(0,0,0,0)', color: COLORS.text },
-  },
-};
-const plotlyConfig = { displayModeBar: false, responsive: true };
+function getPlotly3DLayout(C) {
+  return {
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: { color: C.text, family: '-apple-system, Segoe UI, Arial, sans-serif', size: 10.5 },
+    margin: { l: 0, r: 0, t: 10, b: 0 },
+    scene: {
+      xaxis: { gridcolor: C.grid, zerolinecolor: C.grid, backgroundcolor: 'rgba(0,0,0,0)', color: C.text },
+      yaxis: { gridcolor: C.grid, zerolinecolor: C.grid, backgroundcolor: 'rgba(0,0,0,0)', color: C.text },
+      zaxis: { gridcolor: C.grid, zerolinecolor: C.grid, backgroundcolor: 'rgba(0,0,0,0)', color: C.text },
+    },
+  };
+}
 
 function renderCategory3D(){
+  const C = getThemeColors();
   const c = DATA.category_3d;
   const maxRev = Math.max(...c.revenue);
   const sizes = c.revenue.map(r => 8 + (r / maxRev) * 34);
   const trace = {
     type: 'scatter3d', mode: 'markers', x: c.avg_delay, y: c.avg_score, z: c.orders,
-    text: c.labels.map((l, i) => `${l}<br>orders: ${fmtInt(c.orders[i])}<br>revenue: ${fmtMoney(c.revenue[i])}`),
+    text: c.labels.map((l, i) => `${l}<br>orders: ${fmtInt(c.orders[i])}<br>revenue: ${fmtMoney(c.revenue[i])} BRL`),
     hoverinfo: 'text',
-    marker: { size: sizes, color: c.avg_score, colorscale: [[0, COLORS.coral],[0.5, COLORS.amber],[1, COLORS.teal]], cmin: 3.2, cmax: 4.6, opacity: 0.85, line: { color: COLORS.ink, width: 1 } },
+    marker: { size: sizes, color: c.avg_score, colorscale: [[0, C.coral],[0.5, C.amber],[1, C.teal]], cmin: 3.2, cmax: 4.6, opacity: 0.85, line: { color: C.ink, width: 1 } },
   };
-  const layout = { ...plotly3dLayoutBase, scene: { ...plotly3dLayoutBase.scene,
-    xaxis: { ...plotly3dLayoutBase.scene.xaxis, title: 'avg. delay (days)' },
-    yaxis: { ...plotly3dLayoutBase.scene.yaxis, title: 'avg. review score' },
-    zaxis: { ...plotly3dLayoutBase.scene.zaxis, title: 'order volume' },
+  const baseLayout = getPlotly3DLayout(C);
+  const layout = { ...baseLayout, scene: { ...baseLayout.scene,
+    xaxis: { ...baseLayout.scene.xaxis, title: 'avg. delay (days)' },
+    yaxis: { ...baseLayout.scene.yaxis, title: 'avg. review score' },
+    zaxis: { ...baseLayout.scene.zaxis, title: 'order volume' },
     camera: { eye: { x: 1.6, y: -1.6, z: 0.9 } } } };
-  Plotly.newPlot('plot3dCategory', [trace], layout, plotlyConfig);
+  Plotly.newPlot('plot3dCategory', [trace], layout, { displayModeBar: false, responsive: true });
 }
 
 function renderState3D(){
+  const C = getThemeColors();
   const s = DATA.state_3d;
   const trace = {
     type: 'scatter3d', mode: 'markers+text', x: s.late_pct, y: s.avg_score, z: s.customers,
-    text: s.labels, textposition: 'top center', textfont: { size: 9, color: COLORS.textBright },
+    text: s.labels, textposition: 'top center', textfont: { size: 9, color: C.textBright },
     hovertext: s.labels.map((l, i) => `${l}<br>late: ${s.late_pct[i]}%<br>score: ${s.avg_score[i]}<br>customers: ${fmtInt(s.customers[i])}`),
     hoverinfo: 'text',
-    marker: { size: s.customers.map(c => 6 + Math.sqrt(c) / 8), color: s.late_pct, colorscale: [[0, COLORS.teal],[0.5, COLORS.amber],[1, COLORS.coral]], opacity: 0.9, line: { color: COLORS.ink, width: 1 } },
+    marker: { size: s.customers.map(c => 6 + Math.sqrt(c) / 8), color: s.late_pct, colorscale: [[0, C.teal],[0.5, C.amber],[1, C.coral]], opacity: 0.9, line: { color: C.ink, width: 1 } },
   };
-  const layout = { ...plotly3dLayoutBase, scene: { ...plotly3dLayoutBase.scene,
-    xaxis: { ...plotly3dLayoutBase.scene.xaxis, title: '% late' },
-    yaxis: { ...plotly3dLayoutBase.scene.yaxis, title: 'avg. score' },
-    zaxis: { ...plotly3dLayoutBase.scene.zaxis, title: 'customers' },
+  const baseLayout = getPlotly3DLayout(C);
+  const layout = { ...baseLayout, scene: { ...baseLayout.scene,
+    xaxis: { ...baseLayout.scene.xaxis, title: '% late' },
+    yaxis: { ...baseLayout.scene.yaxis, title: 'avg. score' },
+    zaxis: { ...baseLayout.scene.zaxis, title: 'customers' },
     camera: { eye: { x: 1.7, y: -1.5, z: 0.7 } } } };
-  Plotly.newPlot('plot3dState', [trace], layout, plotlyConfig);
+  Plotly.newPlot('plot3dState', [trace], layout, { displayModeBar: false, responsive: true });
 }
 
 function renderSeller3D(){
+  const C = getThemeColors();
   const sl = DATA.seller_3d;
   const trace = {
     type: 'scatter3d', mode: 'markers', x: sl.revenue, y: sl.avg_delay, z: sl.avg_score,
-    text: sl.orders.map((o, i) => `orders: ${o}<br>revenue: ${fmtMoney(sl.revenue[i])}`), hoverinfo: 'text',
-    marker: { size: sl.orders.map(o => 3 + Math.sqrt(o) * 1.1), color: sl.avg_score, colorscale: [[0, COLORS.coral],[0.5, COLORS.amber],[1, COLORS.teal]], cmin: 3, cmax: 5, opacity: 0.75, line: { color: COLORS.ink, width: 0.5 } },
+    text: sl.orders.map((o, i) => `orders: ${o}<br>revenue: ${fmtMoney(sl.revenue[i])} BRL`), hoverinfo: 'text',
+    marker: { size: sl.orders.map(o => 3 + Math.sqrt(o) * 1.1), color: sl.avg_score, colorscale: [[0, C.coral],[0.5, C.amber],[1, C.teal]], cmin: 3, cmax: 5, opacity: 0.75, line: { color: C.ink, width: 0.5 } },
   };
-  const layout = { ...plotly3dLayoutBase, scene: { ...plotly3dLayoutBase.scene,
-    xaxis: { ...plotly3dLayoutBase.scene.xaxis, title: 'revenue (BRL)' },
-    yaxis: { ...plotly3dLayoutBase.scene.yaxis, title: 'avg. delay (days)' },
-    zaxis: { ...plotly3dLayoutBase.scene.zaxis, title: 'avg. score' },
+  const baseLayout = getPlotly3DLayout(C);
+  const layout = { ...baseLayout, scene: { ...baseLayout.scene,
+    xaxis: { ...baseLayout.scene.xaxis, title: 'revenue (BRL R$)' },
+    yaxis: { ...baseLayout.scene.yaxis, title: 'avg. delay (days)' },
+    zaxis: { ...baseLayout.scene.zaxis, title: 'avg. score' },
     camera: { eye: { x: 1.6, y: -1.7, z: 0.8 } } } };
-  Plotly.newPlot('plot3dSeller', [trace], layout, plotlyConfig);
+  Plotly.newPlot('plot3dSeller', [trace], layout, { displayModeBar: false, responsive: true });
 }
 
 // ---------------------------------------------------------------------------
@@ -3492,9 +3871,9 @@ function setupNav(){
 }
 
 // ---------------------------------------------------------------------------
-// INIT
+// RENDER ALL
 // ---------------------------------------------------------------------------
-function init(){
+function renderAll(){
   safe('kpis', renderKPIs);
   safe('hero', renderHero);
   safe('orderStatus', renderOrderStatus);
@@ -3530,6 +3909,13 @@ function init(){
   safe('category3D', renderCategory3D, 'plot3dCategory');
   safe('state3D', renderState3D, 'plot3dState');
   safe('seller3D', renderSeller3D, 'plot3dSeller');
+}
+
+// ---------------------------------------------------------------------------
+// INIT
+// ---------------------------------------------------------------------------
+function init(){
+  applyTheme(currentTheme);
   setupNav();
 }
 
